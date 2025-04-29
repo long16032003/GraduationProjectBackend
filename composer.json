@@ -7,9 +7,13 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
+        "ext-sodium": "*",
         "graham-campbell/security-core": "^5.0",
         "laravel/framework": "^12.0",
-        "laravel/tinker": "^2.10.1"
+        "laravel/sanctum": "^4.0",
+        "laravel/tinker": "^2.10.1",
+        "paragonie/paserk": "^2.3",
+        "paragonie/paseto": "^3.4"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",

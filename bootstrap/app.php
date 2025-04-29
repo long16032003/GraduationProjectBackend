@@ -17,7 +17,9 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware
+            // we will handle cors in .htaccess file or apache config, so we dont need this middleware
             ->remove(HandleCors::class)
+            // help sanitize user input to prevent XSS attack
             ->replace(TrimStrings::class, Sanitizer::class)
             ->web(
                 replace: [
