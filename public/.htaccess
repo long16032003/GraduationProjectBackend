@@ -6,11 +6,11 @@
     RewriteEngine On
     # disable TRACE and TRACK methods
     RewriteCond %{REQUEST_METHOD} ^(TRACE|TRACK)
-    RewriteRule .* - [F]
+    RewriteRule ^ - [F]
 
     # Handle Pre-flight request
     RewriteCond %{REQUEST_METHOD} OPTIONS
-    RewriteRule ^(.*)$ - [R=200,L]
+    RewriteRule ^ - [L,R=200]
 
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .
