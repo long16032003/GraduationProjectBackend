@@ -50,8 +50,7 @@ class AppServiceProvider extends ServiceProvider
         });
 
         RateLimiter::for('api', static function (Request $request) {
-            $user = $request->user();
-            if (is_null($user)) {
+            if (is_null($user = $request->user())) {
                 return Limit::perMinute(60)->by($request->ip());
             }
             return Limit::perMinute(300)->by($user->id);
