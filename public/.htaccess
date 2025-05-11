@@ -41,7 +41,7 @@
     Header always set Access-Control-Allow-Origin %{AccessControlAllowOrigin}e env=AccessControlAllowOrigin
     Header always set Access-Control-Allow-Methods "GET,POST,PUT,DELETE,OPTIONS"
     # https://developer.mozilla.org/en-US/docs/Glossary/CORS-safelisted_request_header
-    Header always set Access-Control-Allow-Headers "x-requested-with,authorization,x-xsrf-token"
+    Header always set Access-Control-Allow-Headers "x-requested-with,authorization,x-xsrf-token,content-type"
     # https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Expose-Headers
     Header always set Access-Control-Expose-Headers "content-disposition"
     # https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Max-Age
