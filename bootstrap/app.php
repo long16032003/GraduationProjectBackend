@@ -11,6 +11,15 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
+
+        $middleware->encryptCookies(except: [
+            'XDEBUG_SESSION',
+        ]);
+
+        $middleware->alias([
+            'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
+        ]);
+
         // https://laravel.com/docs/12.x/routing#throttling-with-redis
         // https://laravel.com/docs/12.x/rate-limiting#cache-configuration
         $middleware->throttleWithRedis();

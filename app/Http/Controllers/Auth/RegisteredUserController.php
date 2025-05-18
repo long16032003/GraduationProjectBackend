@@ -35,12 +35,12 @@ class RegisteredUserController extends Controller
 
         event(new Registered($user));
 
-        Auth::login($user);
+//        Auth::login($user);
 
         if ($request->wantsJson()) {
             return response()->json([], 204);
         }
 
-        return to_route('dashboard');
+        return to_route('login');
     }
 }
