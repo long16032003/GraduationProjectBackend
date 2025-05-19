@@ -6,5 +6,14 @@ use Illuminate\Database\Eloquent\Model;
 
 class Role extends Model
 {
+    protected function casts(): array
+    {
+        return [
+            'permissions' => 'collection'
+        ];
+    }
 
+    protected $attributes = [
+        'permissions' => '[]',
+    ];
 }
