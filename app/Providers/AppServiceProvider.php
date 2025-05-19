@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Database\Eloquent\Relations\Relation;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -28,6 +29,10 @@ class AppServiceProvider extends ServiceProvider
     {
         DB::prohibitDestructiveCommands($this->app->isProduction());
         Model::shouldBeStrict();
+
+        Relation::enforceMorphMap([
+            'user' => \App\Models\User::class,
+        ]);
 
         // dont hash key before save to redis
         ThrottleRequestsWithRedis::shouldHashKeys(false);
