@@ -6,8 +6,6 @@ use App\Models\Role;
 use BackedEnum;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Str;
-use App\Models\UserRole;
 
 trait HasRoles
 {
@@ -18,14 +16,23 @@ trait HasRoles
 
     public function hasRole(string|array|Collection|BackedEnum $roles): bool
     {
-        return $this->filterRoles($roles)->isNotEmpty();
+        if (is_string($roles)) {
+            $roles = [$roles];
+        }
+
+        if ($roles instanceof BackedEnum) {
+            $roles = [$roles->value];
+        }
+
+        return $this->roles->whereIn('key', collect($roles)->filter())->isNotEmpty();
     }
 
-    public function hasRolePermission(
-        string|array|Collection|BackedEnum $roles,
-        string|array|Collection|BackedEnum $permissions
-    ): bool
+    public function hasPermission(string|array|Collection|BackedEnum $permissions, bool $isAll = false): bool
     {
+        if ($this->permissions->has('*')) {
+            return true;
+        }
+
         if (is_string($permissions)) {
             $permissions = [$permissions];
         }
@@ -34,28 +41,13 @@ trait HasRoles
             $permissions = [$permissions->value];
         }
 
-        $rolePermissions = collect($this->rolePermissions($roles));
-
-        $permissions = collect($permissions);
-
-        return $permissions->contains(fn ($permission) =>
-            $rolePermissions->contains($permission) ||
-            $rolePermissions->contains('*') ||
-            (Str::endsWith($permission, ':create') && $rolePermissions->contains('*:create')) ||
-            (Str::endsWith($permission, ':update') && $rolePermissions->contains('*:update'))
-        );
+        return $isAll
+            ? $this->permissions->has($permissions)
+            : $this->permissions->hasAny($permissions);
     }
 
-    public function hasPermission(string|array|Collection|BackedEnum $permissions): bool
+    public function hasAllPermission(string|array|Collection|BackedEnum $permissions): bool
     {
-        if (is_string($permissions)) {
-            $permissions = [$permissions];
-        }
-
-        if ($permissions instanceof BackedEnum) {
-            $permissions = [$permissions->value];
-        }
-
-        return $this->hasRolePermission($this->roles, $permissions);
+        return $this->hasPermission($permissions, true);
     }
 }

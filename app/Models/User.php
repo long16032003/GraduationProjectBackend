@@ -12,7 +12,7 @@ use Illuminate\Support\Collection;
 
 /**
  * @property Collection $roles
- * @property Collection $cached_permissions
+ * @property Collection $permissions
  */
 class User extends Authenticatable
 {
@@ -42,7 +42,7 @@ class User extends Authenticatable
 
     protected $attributes = [
         'permissions' => '[]',
-        'cached_roles' => '[]',
+        'roles' => '[]',
     ];
 
     /**
@@ -55,8 +55,8 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
-            'cached_permissions' => 'collection',
-            'cached_roles' => 'collection',
+            'permissions' => 'collection',
+            'roles' => 'collection',
         ];
     }
 
