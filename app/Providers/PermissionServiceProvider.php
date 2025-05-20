@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Permission;
 use Illuminate\Contracts\Auth\Access\Authorizable;
 use Illuminate\Contracts\Auth\Access\Gate;
 use Illuminate\Contracts\Foundation\Application;
@@ -22,9 +23,14 @@ class PermissionServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        $this->app->singleton(Permission::class);
+
         // Register the permission at gate
         $this->callAfterResolving(Gate::class, function (Gate $gate, Application $app) {
             $gate->before(function (Authorizable $user, string $ability) {
+                if ($user->isSuperAdmin()) {
+                    return true;
+                }
                 if (method_exists($user, 'hasPermission')) {
                     return $user->hasPermission($ability) ?: null;
                 }

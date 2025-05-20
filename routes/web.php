@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CsrfCookieController;
+use App\Http\Controllers\PermissionController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', static function () {
@@ -11,6 +12,9 @@ Route::group(['prefix' => 'sanctum'], static function () {
     Route::get('/csrf-cookie', [CsrfCookieController::class, 'show'])
         ->name('sanctum.csrf-cookie');
 });
+
+Route::get('permissions', [PermissionController::class, 'show'])
+    ->name('permissions');
 
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';

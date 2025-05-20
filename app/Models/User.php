@@ -38,6 +38,8 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+        'permissions',
+        'roles',
     ];
 
     protected $attributes = [
@@ -57,6 +59,7 @@ class User extends Authenticatable
             'password' => 'hashed',
             'permissions' => 'collection',
             'roles' => 'collection',
+            'superadmin' => 'boolean',
         ];
     }
 

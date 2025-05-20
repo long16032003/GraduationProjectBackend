@@ -30,7 +30,7 @@ class GeneratePermissionCommand extends Command
 
         $data = [
             'tree' => Permission::structure(),
-            'permissions' => Permission::all(),
+            'flat' => Permission::all(),
         ];
 
         /** @var \Illuminate\Filesystem\Filesystem $files */
