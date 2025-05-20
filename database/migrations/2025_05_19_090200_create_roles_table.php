@@ -19,19 +19,19 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        Schema::create('user_role', static function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('user_id');
-            $table->foreignId('role_id');
-            $table->timestamps();
+        Schema::create('model_has_roles', static function (Blueprint $table) {
+            $table->unsignedBigInteger('role_id');
+            $table->unsignedBigInteger('model_id');
+            $table->string('model_type', 128);
 
-            $table->unique(['user_id', 'role_id']);
+            $table->foreign('role_id')
+                ->references('id') // role id
+                ->on('roles')
+                ->onDelete('cascade');
+
+            $table->primary(['model_id', 'model_type', 'role_id']);
         });
 
-        Schema::table('users', static function (Blueprint $table) {
-            $table->json('roles')->nullable();
-            $table->json('permissions')->nullable();
-        });
     }
 
     /**
@@ -39,11 +39,7 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::dropIfExists('model_has_roles');
         Schema::dropIfExists('roles');
-        Schema::dropIfExists('user_role');
-
-        Schema::table('users', static function (Blueprint $table) {
-            $table->dropColumn(['cached_roles', 'cached_permissions']);
-        });
     }
 };

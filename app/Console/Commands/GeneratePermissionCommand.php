@@ -46,17 +46,17 @@ class GeneratePermissionCommand extends Command
 
     private function registerPermissions(): void
     {
-        Permission::group(['web' => 'Web'], static function() {
-            Permission::resource(['post' => 'Post'], static function() {
-                Permission::actions(['create', 'delete']);
-                Permission::resource(['comment' => 'Comment'], ['create', 'delete']);
-            });
+        Permission::group(['default' => 'Default'], static function() {
+            Permission::resource(['user' => 'User']);
+            Permission::resource(['role' => 'Role']);
         });
-        Permission::group(['api' => 'Api Group'], static function() {
-            Permission::resource(['news' => 'News'], static function() {
-                Permission::actions(['create', 'delete']);
-                Permission::resource(['comment' => 'Comment'], ['create', 'delete']);
-            });
-        });
+
+//        Permission::group(['web' => 'Web'], static function () {
+//            Permission::resource(['post' => 'Post'], static function () {
+//                Permission::action('browse', 'Browse post');
+//                Permission::actions(['create', 'delete']);
+//                Permission::resource(['comment' => 'Comment'], ['create', 'delete']);
+//            });
+//        });
     }
 }

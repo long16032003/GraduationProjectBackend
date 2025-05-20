@@ -15,28 +15,6 @@ use InvalidArgumentException;
 class Permission
 {
     /**
-     * Array containing all default actions
-     *
-     * @var array<string>
-     */
-    protected static array $actions = [
-        'create',
-        'read',
-        'update',
-        'delete',
-        'browse',
-        'clone',
-        'restore',
-        'forceDelete',
-        'export',
-        'import',
-        'print',
-        'approve',
-        'reject',
-        'upload',
-    ];
-
-    /**
      * Array containing all registered actions
      *
      * @var array<string>
@@ -123,7 +101,7 @@ class Permission
      * @param array<string, string> $customDescriptions Optional array of custom descriptions
      * @return void
      */
-    public static function resource(array $attributes, array|Closure $callbackOrActions, array $customDescriptions = []): void
+    public static function resource(array $attributes, array|Closure $callbackOrActions = [], array $customDescriptions = []): void
     {
         static::validateAttributesFormat($attributes);
         $name = array_key_first($attributes);
@@ -154,7 +132,10 @@ class Permission
 
         // Execute callback or register actions
         if (is_array($callbackOrActions)) {
-            static::actions($callbackOrActions, $customDescriptions);
+            static::actions(
+                empty($callbackOrActions) ? collect(static::$actionMap)->keys()->all() : $callbackOrActions,
+                $customDescriptions
+            );
         } elseif ($callbackOrActions instanceof Closure) {
             $callbackOrActions();
         } else {
