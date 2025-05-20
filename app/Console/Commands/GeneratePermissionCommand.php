@@ -28,12 +28,17 @@ class GeneratePermissionCommand extends Command
     {
         $this->registerPermissions();
 
+        $data = [
+            'tree' => Permission::structure(),
+            'permissions' => Permission::all(),
+        ];
+
         /** @var \Illuminate\Filesystem\Filesystem $files */
         $files = $this->laravel['files'];
 
         $files->replace(
             $this->laravel->configPath('permission.php'),
-            '<?php return ' . var_export(Permission::structure(), true) . ';'
+            '<?php return ' . var_export($data, true) . ';'
         );
 
         return Command::SUCCESS;
@@ -41,26 +46,16 @@ class GeneratePermissionCommand extends Command
 
     private function registerPermissions(): void
     {
-        Permission::group(['web' => 'Web Group'], static function() {
-            Permission::resource(['post' => 'Post Management'], static function() {
-                Permission::action('create', 'Create post');
-                Permission::action('delete', 'Delete post');
-
-                Permission::resource(['comment' => 'Comment Management'], static function() {
-                    Permission::action('create', 'Create comment');
-                    Permission::action('delete', 'Delete comment');
-                });
+        Permission::group(['web' => 'Web'], static function() {
+            Permission::resource(['post' => 'Post'], static function() {
+                Permission::actions(['create', 'delete']);
+                Permission::resource(['comment' => 'Comment'], ['create', 'delete']);
             });
         });
         Permission::group(['api' => 'Api Group'], static function() {
-            Permission::resource(['news' => 'News Management'], static function() {
-                Permission::action('update', 'Update existing news');
-                Permission::action('delete', 'Delete news');
-
-                Permission::resource(['comment' => 'Comment Management'], static function() {
-                    Permission::action('create', 'Create comment');
-                    Permission::action('delete', 'Delete comment');
-                });
+            Permission::resource(['news' => 'News'], static function() {
+                Permission::actions(['create', 'delete']);
+                Permission::resource(['comment' => 'Comment'], ['create', 'delete']);
             });
         });
     }

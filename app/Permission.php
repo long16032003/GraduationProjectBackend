@@ -15,6 +15,50 @@ use InvalidArgumentException;
 class Permission
 {
     /**
+     * Array containing all default actions
+     *
+     * @var array<string>
+     */
+    protected static array $actions = [
+        'create',
+        'read',
+        'update',
+        'delete',
+        'browse',
+        'clone',
+        'restore',
+        'forceDelete',
+        'export',
+        'import',
+        'print',
+        'approve',
+        'reject',
+        'upload',
+    ];
+
+    /**
+     * Array containing all registered actions
+     *
+     * @var array<string>
+     */
+    protected static array $actionMap = [
+        'create' => 'Create :resource',
+        'read' => 'View :resource',
+        'update' => 'Update :resource',
+        'delete' => 'Delete :resource',
+        'browse' => 'Browse :resource',
+        'clone' => 'Replicate :resource',
+        'restore' => 'Restore :resource',
+        'forceDelete' => 'Permanently delete :resource',
+        'export' => 'Export :resource',
+        'import' => 'Import :resource',
+        'print' => 'Print :resource',
+        'approve' => 'Approve :resource',
+        'reject' => 'Reject :resource',
+        'upload' => 'Upload :resource',
+    ];
+
+    /**
      * Array containing all registered permissions
      *
      * @var array<string>
@@ -54,7 +98,6 @@ class Permission
             'name' => $name,
             'description' => $description,
             'actions' => [],
-            'permissions' => [],
             'children' => [],
         ];
 
@@ -76,10 +119,11 @@ class Permission
      * Define a resource
      *
      * @param array<string, string> $attributes Array in the format ['name' => 'description']
-     * @param Closure $callback Function containing actions
+     * @param array|Closure $callbackOrActions Function containing actions or array of action names
+     * @param array<string, string> $customDescriptions Optional array of custom descriptions
      * @return void
      */
-    public static function resource(array $attributes, Closure $callback): void
+    public static function resource(array $attributes, array|Closure $callbackOrActions, array $customDescriptions = []): void
     {
         static::validateAttributesFormat($attributes);
         $name = array_key_first($attributes);
@@ -105,15 +149,17 @@ class Permission
             'name' => $name,
             'description' => $description,
             'actions' => [],
-            'permissions' => [],
             'children' => [],
         ]);
 
-        // Execute callback
-        $callback();
-
-        // Generate permissions for this resource
-        static::generateResourcePermissions($currentPath);
+        // Execute callback or register actions
+        if (is_array($callbackOrActions)) {
+            static::actions($callbackOrActions, $customDescriptions);
+        } elseif ($callbackOrActions instanceof Closure) {
+            $callbackOrActions();
+        } else {
+            throw new InvalidArgumentException('Second parameter must be a Closure or an array of action names');
+        }
 
         // Remove from stack
         array_pop(static::$groupStack);
@@ -144,7 +190,44 @@ class Permission
 
         // Add action to structure
         $currentPath = static::getCurrentStructurePath();
-        Arr::set(static::$structure, $currentPath . '.actions.' . $action, $description);
+        Arr::set(static::$structure, $currentPath . '.actions.' . $action, [
+            'name' => $action,
+            'description' => $description,
+            'permission' => $permission,
+            'type' => 'action',
+        ]);
+    }
+
+    /**
+     * Define multiple actions on a resource at once
+     *
+     * @param array<string> $actionNames Array of action names
+     * @param array<string, string> $customDescriptions Optional array of custom descriptions
+     * @return void
+     * @throws InvalidArgumentException
+     */
+    public static function actions(array $actionNames, array $customDescriptions = []): void
+    {
+        if (count(static::$groupStack) < 2) {
+            throw new InvalidArgumentException('Actions must be defined inside a resource');
+        }
+
+        $resourceDescription = end(static::$groupStack)['description'];
+
+        foreach ($actionNames as $action) {
+            // Get description from custom descriptions or use default from $actions array
+            $description = $customDescriptions[$action] ?? (
+                static::$actionMap[$action] ?? ''
+            );
+
+            // Replace placeholder in description if exists
+            if (str_contains($description, ':resource')) {
+                $description = str_replace(':resource', $resourceDescription, $description);
+            }
+
+            // Register the action
+            static::action($action, $description);
+        }
     }
 
     /**
@@ -183,45 +266,6 @@ class Permission
         }
 
         return $path;
-    }
-
-    /**
-     * Generate permissions for a resource at a given path
-     *
-     * @param string $path
-     * @return void
-     */
-    protected static function generateResourcePermissions(string $path): void
-    {
-        $actions = Arr::get(static::$structure, $path . '.actions', []);
-
-        if (empty($actions)) {
-            return;
-        }
-
-        // Build permission prefix
-        $permissionPrefix = '';
-        $resourcePath = '';
-
-        foreach (static::$groupStack as $index => $item) {
-            if ($index === 0) {
-                $permissionPrefix = $item['name'] . ':';
-            } else {
-                if ($resourcePath) {
-                    $resourcePath .= '.';
-                }
-                $resourcePath .= $item['name'];
-            }
-        }
-
-        // Generate permissions
-        $permissions = [];
-        foreach (array_keys($actions) as $action) {
-            $permissions[] = "{$permissionPrefix}{$resourcePath}:{$action}";
-        }
-
-        // Add permissions to structure
-        Arr::set(static::$structure, $path . '.permissions', $permissions);
     }
 
     /**
@@ -276,4 +320,21 @@ class Permission
         static::$groupStack = [];
         static::$structure = [];
     }
+
+    /**
+     * Get or set the action map
+     *
+     * @return array<string>
+     */
+    public static function actionMap(?array $actionMap = null): array
+    {
+        if (is_null($actionMap)) {
+            return static::$actionMap;
+        }
+
+        static::$actionMap = array_merge(static::$actionMap, $actionMap);
+
+        return static::$actionMap;
+    }
+
 }
