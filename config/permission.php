@@ -18,102 +18,67 @@
           'description' => 'User',
           'actions' => 
           array (
-            'create' => 
+            'browse' => 
             array (
-              'name' => 'create',
-              'description' => 'Create User',
-              'permission' => 'default:user:create',
+              'name' => 'browse',
+              'description' => 'Browse',
+              'permission' => 'user:browse',
               'type' => 'action',
             ),
             'read' => 
             array (
               'name' => 'read',
-              'description' => 'View User',
-              'permission' => 'default:user:read',
+              'description' => 'View',
+              'permission' => 'user:read',
+              'type' => 'action',
+            ),
+            'create' => 
+            array (
+              'name' => 'create',
+              'description' => 'Create',
+              'permission' => 'user:create',
               'type' => 'action',
             ),
             'update' => 
             array (
               'name' => 'update',
-              'description' => 'Update User',
-              'permission' => 'default:user:update',
+              'description' => 'Update',
+              'permission' => 'user:update',
               'type' => 'action',
             ),
             'delete' => 
             array (
               'name' => 'delete',
-              'description' => 'Delete User',
-              'permission' => 'default:user:delete',
-              'type' => 'action',
-            ),
-            'browse' => 
-            array (
-              'name' => 'browse',
-              'description' => 'Browse User',
-              'permission' => 'default:user:browse',
+              'description' => 'Delete',
+              'permission' => 'user:delete',
               'type' => 'action',
             ),
             'clone' => 
             array (
               'name' => 'clone',
-              'description' => 'Replicate User',
-              'permission' => 'default:user:clone',
-              'type' => 'action',
-            ),
-            'restore' => 
-            array (
-              'name' => 'restore',
-              'description' => 'Restore User',
-              'permission' => 'default:user:restore',
-              'type' => 'action',
-            ),
-            'forceDelete' => 
-            array (
-              'name' => 'forceDelete',
-              'description' => 'Permanently delete User',
-              'permission' => 'default:user:forceDelete',
-              'type' => 'action',
-            ),
-            'export' => 
-            array (
-              'name' => 'export',
-              'description' => 'Export User',
-              'permission' => 'default:user:export',
+              'description' => 'Replicate',
+              'permission' => 'user:clone',
               'type' => 'action',
             ),
             'import' => 
             array (
               'name' => 'import',
-              'description' => 'Import User',
-              'permission' => 'default:user:import',
+              'description' => 'Import',
+              'permission' => 'user:import',
+              'type' => 'action',
+            ),
+            'export' => 
+            array (
+              'name' => 'export',
+              'description' => 'Export',
+              'permission' => 'user:export',
               'type' => 'action',
             ),
             'print' => 
             array (
               'name' => 'print',
-              'description' => 'Print User',
-              'permission' => 'default:user:print',
-              'type' => 'action',
-            ),
-            'approve' => 
-            array (
-              'name' => 'approve',
-              'description' => 'Approve User',
-              'permission' => 'default:user:approve',
-              'type' => 'action',
-            ),
-            'reject' => 
-            array (
-              'name' => 'reject',
-              'description' => 'Reject User',
-              'permission' => 'default:user:reject',
-              'type' => 'action',
-            ),
-            'upload' => 
-            array (
-              'name' => 'upload',
-              'description' => 'Upload User',
-              'permission' => 'default:user:upload',
+              'description' => 'Print',
+              'permission' => 'user:print',
               'type' => 'action',
             ),
           ),
@@ -128,102 +93,142 @@
           'description' => 'Role',
           'actions' => 
           array (
-            'create' => 
+            'browse' => 
             array (
-              'name' => 'create',
-              'description' => 'Create Role',
-              'permission' => 'default:role:create',
+              'name' => 'browse',
+              'description' => 'Browse',
+              'permission' => 'role:browse',
               'type' => 'action',
             ),
             'read' => 
             array (
               'name' => 'read',
-              'description' => 'View Role',
-              'permission' => 'default:role:read',
+              'description' => 'View',
+              'permission' => 'role:read',
+              'type' => 'action',
+            ),
+            'create' => 
+            array (
+              'name' => 'create',
+              'description' => 'Create',
+              'permission' => 'role:create',
               'type' => 'action',
             ),
             'update' => 
             array (
               'name' => 'update',
-              'description' => 'Update Role',
-              'permission' => 'default:role:update',
+              'description' => 'Update',
+              'permission' => 'role:update',
               'type' => 'action',
             ),
             'delete' => 
             array (
               'name' => 'delete',
-              'description' => 'Delete Role',
-              'permission' => 'default:role:delete',
-              'type' => 'action',
-            ),
-            'browse' => 
-            array (
-              'name' => 'browse',
-              'description' => 'Browse Role',
-              'permission' => 'default:role:browse',
+              'description' => 'Delete',
+              'permission' => 'role:delete',
               'type' => 'action',
             ),
             'clone' => 
             array (
               'name' => 'clone',
-              'description' => 'Replicate Role',
-              'permission' => 'default:role:clone',
-              'type' => 'action',
-            ),
-            'restore' => 
-            array (
-              'name' => 'restore',
-              'description' => 'Restore Role',
-              'permission' => 'default:role:restore',
-              'type' => 'action',
-            ),
-            'forceDelete' => 
-            array (
-              'name' => 'forceDelete',
-              'description' => 'Permanently delete Role',
-              'permission' => 'default:role:forceDelete',
-              'type' => 'action',
-            ),
-            'export' => 
-            array (
-              'name' => 'export',
-              'description' => 'Export Role',
-              'permission' => 'default:role:export',
+              'description' => 'Replicate',
+              'permission' => 'role:clone',
               'type' => 'action',
             ),
             'import' => 
             array (
               'name' => 'import',
-              'description' => 'Import Role',
-              'permission' => 'default:role:import',
+              'description' => 'Import',
+              'permission' => 'role:import',
+              'type' => 'action',
+            ),
+            'export' => 
+            array (
+              'name' => 'export',
+              'description' => 'Export',
+              'permission' => 'role:export',
               'type' => 'action',
             ),
             'print' => 
             array (
               'name' => 'print',
-              'description' => 'Print Role',
-              'permission' => 'default:role:print',
+              'description' => 'Print',
+              'permission' => 'role:print',
               'type' => 'action',
             ),
-            'approve' => 
+          ),
+          'children' => 
+          array (
+          ),
+        ),
+        'media' => 
+        array (
+          'type' => 'resource',
+          'name' => 'media',
+          'description' => 'Media',
+          'actions' => 
+          array (
+            'browse' => 
             array (
-              'name' => 'approve',
-              'description' => 'Approve Role',
-              'permission' => 'default:role:approve',
+              'name' => 'browse',
+              'description' => 'Browse',
+              'permission' => 'media:browse',
               'type' => 'action',
             ),
-            'reject' => 
+            'read' => 
             array (
-              'name' => 'reject',
-              'description' => 'Reject Role',
-              'permission' => 'default:role:reject',
+              'name' => 'read',
+              'description' => 'View',
+              'permission' => 'media:read',
               'type' => 'action',
             ),
-            'upload' => 
+            'create' => 
             array (
-              'name' => 'upload',
-              'description' => 'Upload Role',
-              'permission' => 'default:role:upload',
+              'name' => 'create',
+              'description' => 'Upload',
+              'permission' => 'media:create',
+              'type' => 'action',
+            ),
+            'update' => 
+            array (
+              'name' => 'update',
+              'description' => 'Update',
+              'permission' => 'media:update',
+              'type' => 'action',
+            ),
+            'delete' => 
+            array (
+              'name' => 'delete',
+              'description' => 'Delete',
+              'permission' => 'media:delete',
+              'type' => 'action',
+            ),
+            'clone' => 
+            array (
+              'name' => 'clone',
+              'description' => 'Replicate',
+              'permission' => 'media:clone',
+              'type' => 'action',
+            ),
+            'import' => 
+            array (
+              'name' => 'import',
+              'description' => 'Import',
+              'permission' => 'media:import',
+              'type' => 'action',
+            ),
+            'export' => 
+            array (
+              'name' => 'export',
+              'description' => 'Export',
+              'permission' => 'media:export',
+              'type' => 'action',
+            ),
+            'print' => 
+            array (
+              'name' => 'print',
+              'description' => 'Print',
+              'permission' => 'media:print',
               'type' => 'action',
             ),
           ),
@@ -236,33 +241,32 @@
   ),
   'flat' => 
   array (
-    0 => 'default:user:create',
-    1 => 'default:user:read',
-    2 => 'default:user:update',
-    3 => 'default:user:delete',
-    4 => 'default:user:browse',
-    5 => 'default:user:clone',
-    6 => 'default:user:restore',
-    7 => 'default:user:forceDelete',
-    8 => 'default:user:export',
-    9 => 'default:user:import',
-    10 => 'default:user:print',
-    11 => 'default:user:approve',
-    12 => 'default:user:reject',
-    13 => 'default:user:upload',
-    14 => 'default:role:create',
-    15 => 'default:role:read',
-    16 => 'default:role:update',
-    17 => 'default:role:delete',
-    18 => 'default:role:browse',
-    19 => 'default:role:clone',
-    20 => 'default:role:restore',
-    21 => 'default:role:forceDelete',
-    22 => 'default:role:export',
-    23 => 'default:role:import',
-    24 => 'default:role:print',
-    25 => 'default:role:approve',
-    26 => 'default:role:reject',
-    27 => 'default:role:upload',
+    0 => 'user:browse',
+    1 => 'user:read',
+    2 => 'user:create',
+    3 => 'user:update',
+    4 => 'user:delete',
+    5 => 'user:clone',
+    6 => 'user:import',
+    7 => 'user:export',
+    8 => 'user:print',
+    9 => 'role:browse',
+    10 => 'role:read',
+    11 => 'role:create',
+    12 => 'role:update',
+    13 => 'role:delete',
+    14 => 'role:clone',
+    15 => 'role:import',
+    16 => 'role:export',
+    17 => 'role:print',
+    18 => 'media:browse',
+    19 => 'media:read',
+    20 => 'media:create',
+    21 => 'media:update',
+    22 => 'media:delete',
+    23 => 'media:clone',
+    24 => 'media:import',
+    25 => 'media:export',
+    26 => 'media:print',
   ),
 );

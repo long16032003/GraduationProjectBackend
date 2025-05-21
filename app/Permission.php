@@ -20,20 +20,20 @@ class Permission
      * @var array<string>
      */
     protected static array $actionMap = [
-        'create' => 'Create :resource',
-        'read' => 'View :resource',
-        'update' => 'Update :resource',
-        'delete' => 'Delete :resource',
-        'browse' => 'Browse :resource',
-        'clone' => 'Replicate :resource',
-        'restore' => 'Restore :resource',
-        'forceDelete' => 'Permanently delete :resource',
-        'export' => 'Export :resource',
-        'import' => 'Import :resource',
-        'print' => 'Print :resource',
-        'approve' => 'Approve :resource',
-        'reject' => 'Reject :resource',
-        'upload' => 'Upload :resource',
+        'browse' => 'Browse',
+        'read' => 'View',
+        'create' => 'Create',
+        'update' => 'Update',
+        'delete' => 'Delete',
+        'clone' => 'Replicate',
+        'import' => 'Import',
+        'export' => 'Export',
+        'print' => 'Print',
+//        'restore' => 'Restore',
+//        'forceDelete' => 'Permanently delete',
+//        'approve' => 'Approve',
+//        'reject' => 'Reject',
+//        'upload' => 'Upload',
     ];
 
     /**
@@ -225,6 +225,10 @@ class Permission
             ->slice(1)
             ->map(fn($item) => $item['name'])
             ->implode('.');
+
+        if ($group === 'default') {
+            return "{$resources}:{$action}";
+        }
 
         return "{$group}:{$resources}:{$action}";
     }

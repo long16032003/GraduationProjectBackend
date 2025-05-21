@@ -49,6 +49,7 @@ class GeneratePermissionCommand extends Command
         Permission::group(['default' => 'Default'], static function() {
             Permission::resource(['user' => 'User']);
             Permission::resource(['role' => 'Role']);
+            Permission::resource(['media' => 'Media'], [], ['create' => 'Upload']);
         });
 
 //        Permission::group(['web' => 'Web'], static function () {
