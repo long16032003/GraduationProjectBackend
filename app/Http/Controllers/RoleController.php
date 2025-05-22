@@ -9,6 +9,6 @@ class RoleController extends Controller
 {
     public function store(RoleStoreRequest $request): JsonResponse
     {
-        return new JsonResponse(config('role'), JsonResponse::HTTP_OK);
+        return new JsonResponse($request->all(), JsonResponse::HTTP_OK);
     }
 }
