@@ -30,7 +30,7 @@ class RoleStoreRequest extends FormRequest
             'permissions' => ['required', 'array'],
             'permissions.*' => [
                 'required',
-                'regex:/^([a-z0-9_-]+):([a-z0-9_\.-]+):([a-z0-9_-]+)$/',
+                'regex:/^(?:[a-z0-9_-]+:)?[a-z0-9_\.-]+:[a-z0-9_-]+$/',
                 'max:255',
             ],
         ];

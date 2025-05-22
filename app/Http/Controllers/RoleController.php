@@ -3,12 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\RoleStoreRequest;
-use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 
 class RoleController extends Controller
 {
     public function store(RoleStoreRequest $request): JsonResponse
     {
-        return new JsonResponse(config('role'), Response::HTTP_OK);
+        return new JsonResponse(config('role'), JsonResponse::HTTP_OK);
     }
 }

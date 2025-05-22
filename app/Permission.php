@@ -227,10 +227,10 @@ class Permission
             ->implode('.');
 
         if ($group === 'default') {
-            return "{$resources}:{$action}";
+            return strtolower("{$resources}:{$action}");
         }
 
-        return "{$group}:{$resources}:{$action}";
+        return strtolower("{$group}:{$resources}:{$action}");
     }
 
     /**
