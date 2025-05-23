@@ -39,13 +39,14 @@
 <IfModule mod_headers.c>
     SetEnvIfNoCase Origin "^https?://((www\.)?[a-z0-9]+\.)?(r0\.test|localhost)(:\d+)?$" AccessControlAllowOrigin=$0
     Header always set Access-Control-Allow-Origin %{AccessControlAllowOrigin}e env=AccessControlAllowOrigin
-    Header always set Access-Control-Allow-Methods "GET,POST,PUT,DELETE,OPTIONS"
+    Header always set Access-Control-Allow-Credentials "true" env=AccessControlAllowOrigin
+    Header always set Access-Control-Allow-Methods "GET,POST,PUT,DELETE,OPTIONS" env=AccessControlAllowOrigin
     # https://developer.mozilla.org/en-US/docs/Glossary/CORS-safelisted_request_header
-    Header always set Access-Control-Allow-Headers "x-requested-with,authorization,x-xsrf-token,content-type"
+    Header always set Access-Control-Allow-Headers "x-requested-with,authorization,x-xsrf-token,content-type" env=AccessControlAllowOrigin
     # https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Expose-Headers
-    Header always set Access-Control-Expose-Headers "content-disposition"
+    Header always set Access-Control-Expose-Headers "content-disposition" env=AccessControlAllowOrigin
     # https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Max-Age
-    Header always set Access-Control-Max-Age "86400"
+    Header always set Access-Control-Max-Age "86400" env=AccessControlAllowOrigin
     # Prevent sensitive information leakage through referer header
     Header always set Referrer-Policy "strict-origin"
     # Browser Sniffing Protection
