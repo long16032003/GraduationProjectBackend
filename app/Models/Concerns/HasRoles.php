@@ -75,6 +75,10 @@ trait HasRoles
 
     public function hasPermission(string|array|Collection|BackedEnum $permissions, bool $hasAny = true): bool
     {
+        // superadmin has all permissions
+        if ($this->isSuperAdmin()) {
+            return true;
+        }
         return $this->hasRolePermission($this->roles, $permissions, $hasAny);
     }
     public function hasAllPermission(string|array|Collection|BackedEnum $permissions): bool
