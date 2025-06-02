@@ -137,7 +137,7 @@ return [
     */
 
     'providers' => ServiceProvider::defaultProviders()->replace([
-        //
+        // EloquentFilter\ServiceProvider::class,
     ])->toArray(),
 
 ];
