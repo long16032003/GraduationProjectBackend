@@ -15,7 +15,7 @@ class Dish extends Model
     protected $fillable = [
         'name',
         'description',
-        'image',
+        'image_id',
         'price',
         'category_id',
         'creator_id',
@@ -30,6 +30,11 @@ class Dish extends Model
     public function creator()
     {
         return $this->belongsTo(User::class, 'creator_id', 'id');
+    }
+
+    public function image()
+    {
+        return $this->belongsTo(Media::class, 'image_id', 'id');
     }
 
     public function modelFilter()

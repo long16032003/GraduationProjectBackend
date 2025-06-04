@@ -13,9 +13,10 @@ use App\Http\Controllers\DishCategory\DeleteDishCategoryController;
 use App\Http\Controllers\DishCategory\IndexDishCategoryController;
 use App\Http\Controllers\DishCategory\StoreDishCategoryController;
 use App\Http\Controllers\DishCategory\UpdateDishCategoryController;
-
+use App\Http\Controllers\Media\StoreMediaController;
 use App\Http\Controllers\Post\DeletePostController;
 use App\Http\Controllers\Post\IndexPostController;
+use App\Http\Controllers\Post\ShowPostController;
 use App\Http\Controllers\Post\StorePostController;
 use App\Http\Controllers\Post\UpdatePostController;
 
@@ -49,7 +50,7 @@ require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';
 
 Route::middleware('auth')->group(function () {
-    Route::post('/upload-image', [UploadImageController::class, 'upload'])->name('upload-image');
+    Route::post('/upload-image', [StoreMediaController::class, 'store'])->name('upload-image');
 
     Route::post('dish-categories', [StoreDishCategoryController::class, 'store'])->name('dish-categories.store');
     Route::get('/dish-categories', [IndexDishCategoryController::class, 'index'])->name('dish-categories.index');
@@ -60,6 +61,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/posts', [IndexPostController::class, 'index'])->name('posts.index');
     Route::put('posts/{id}', [UpdatePostController::class, 'update'])->name('posts.update');
     Route::delete('posts/{id}', [DeletePostController::class, 'delete'])->name('posts.delete');
+    Route::get('posts/{id}', [ShowPostController::class, 'show'])->name('posts.show');
 
     Route::post('staffs', [StoreStaffController::class, 'store'])->name('staffs.store');
     Route::get('/staffs', [IndexStaffController::class, 'index'])->name('staffs.index');

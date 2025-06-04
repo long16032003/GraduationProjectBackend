@@ -17,6 +17,9 @@ class UpdateDishController extends Controller
             $dish->update([
                 'name' => $request->name,
                 'description' => $request->description,
+                'image_id' => $request->image_id,
+                'price' => $request->price,
+                'category_id' => $request->category_id,
             ]);
 
             return new JsonResponse([

@@ -16,6 +16,7 @@ class IndexDishController extends Controller
             ->with([
                 'dishCategories',
                 'creator',
+                'image',
             ])
             ->get();
 

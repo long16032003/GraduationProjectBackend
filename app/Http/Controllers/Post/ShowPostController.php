@@ -7,20 +7,26 @@ use App\Models\Post;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-class IndexPostController extends Controller
+class ShowPostController extends Controller
 {
-    public function index(Request $request): JsonResponse
+    public function show(Request $request, $id): JsonResponse
     {
         try {
-            $posts = Post::filter($request->all())
+            $post = Post::filter($request->all())
                 ->with(['creator'])
-                ->get();
+                ->findOrFail($id);
 
             return new JsonResponse([
                 'success' => true,
-                'message' => 'Lấy danh sách bài viết thành công',
-                'data' => $posts
+                'message' => 'Lấy bài viết thành công',
+                'data' => $post,
             ], JsonResponse::HTTP_OK);
+
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => 'Không tìm thấy bài viết'
+            ], JsonResponse::HTTP_NOT_FOUND);
 
         } catch (\Exception $e) {
             return new JsonResponse([

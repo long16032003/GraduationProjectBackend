@@ -16,7 +16,11 @@ return new class extends Migration
             $table->foreignId('creator_id')->constrained('users');
             $table->string('name');
             $table->text('description')->nullable();
-            $table->string('image')->nullable();
+            $table->unsignedBigInteger('image_id')->nullable();
+            $table->foreign('image_id')
+                  ->references('id')
+                  ->on('media')
+                ->nullOnDelete();
             $table->string('price');
             $table->foreignId('category_id')->constrained('dish_categories');
             $table->boolean('is_active')->default(true);

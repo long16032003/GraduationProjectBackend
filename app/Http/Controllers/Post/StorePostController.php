@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Post;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 class StorePostController extends Controller
@@ -28,8 +29,10 @@ class StorePostController extends Controller
         }
 
         try {
+            $auth = Auth::user();
             // Tạo bản ghi mới
             $post = Post::create([
+                'creator_id' => $auth->id,
                 'title' => $request->title,
                 'content' => $request->content,
                 'summary' => $request->summary,

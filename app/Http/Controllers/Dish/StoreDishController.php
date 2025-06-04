@@ -16,19 +16,12 @@ class StoreDishController extends Controller
     {
         $auth = Auth::user();
         try {
-            // Xử lý upload ảnh nếu có
-            $imagePath = null;
-            if ($request->hasFile('image')) {
-                $file = $request->file('image');
-                $imagePath = Storage::disk('public')->put('dishes', $file);
-            }
-
             // Tạo bản ghi mới
             $dish = Dish::create([
                 'creator_id' => $auth->id,
                 'name' => $request->name,
                 'description' => $request->description,
-                'image' => $imagePath,
+                'image_id' => $request->image_id,
                 'price' => $request->price,
                 'category_id' => $request->category_id,
             ]);

@@ -8,6 +8,13 @@ class Media extends Model
 {
     protected $table = 'media';
     public $timestamps = false;
+
+    const TYPE_IMAGE = 'image';
+    const TYPE_VIDEO = 'video';
+    const TYPE_AUDIO = 'audio';
+    const TYPE_DOCUMENT = 'document';
+    const TYPE_OTHER = 'other';
+
     protected $fillable = [
         'title',
         'path',
@@ -16,5 +23,4 @@ class Media extends Model
         'created_at',
         'updated_at'
     ];
-
 }
