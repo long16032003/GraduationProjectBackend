@@ -27,6 +27,10 @@ use App\Http\Controllers\Promotion\UpdatePromotionController;
 
 use App\Http\Controllers\Staff\IndexStaffController;
 use App\Http\Controllers\Staff\StoreStaffController;
+use App\Http\Controllers\Table\DeleteTableController;
+use App\Http\Controllers\Table\IndexTableController;
+use App\Http\Controllers\Table\StoreTableController;
+use App\Http\Controllers\Table\UpdateTableController;
 use App\Http\Controllers\Upload\UploadImageController;
 use Illuminate\Support\Facades\Route;
 
@@ -73,7 +77,15 @@ Route::middleware('auth')->group(function () {
     Route::post('promotions', [StorePromotionController::class, 'store'])->name('promotions.store');
     Route::put('promotions/{id}', [UpdatePromotionController::class, 'update'])->name('promotions.update');
     Route::delete('promotions/{id}', [DeletePromotionController::class, 'delete'])->name('promotions.delete');
+
+    // Table routes
+    Route::post('tables', [StoreTableController::class, 'store'])->name('tables.store');
+    Route::put('tables/{table}', [UpdateTableController::class, 'update'])->name('tables.update');
+    Route::delete('tables/{table}', [DeleteTableController::class, 'delete'])->name('tables.delete');
 });
 Route::get('/dishes', [IndexDishController::class, 'index'])->name('dishes.index');
 
 Route::get('/promotions', [IndexPromotionController::class, 'index'])->name('promotions.index');
+
+// Public table routes
+Route::get('/tables', [IndexTableController::class, 'index'])->name('tables.index');

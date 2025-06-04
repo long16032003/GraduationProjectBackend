@@ -19,7 +19,7 @@ class DeletePostController extends Controller
             return new JsonResponse([
                 'success' => true,
                 'message' => 'Bài viết được xóa thành công',
-            ], 200);
+            ], JsonResponse::HTTP_OK);
 
         } catch (\Exception $e) {
             return response()->json([
