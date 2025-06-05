@@ -28,17 +28,12 @@ class Reservation extends Model
 
     public function table()
     {
-        return $this->belongsTo(Table::class);
+        return $this->belongsTo(Table::class, 'table_id', 'id');
     }
-
-    // public function customer()
-    // {
-    //     return $this->belongsTo(Customer::class);
-    // }
 
     public function customer()
     {
-        return $this->belongsTo(User::class, 'customer_id', 'id');
+        return $this->belongsTo(Customer::class, 'customer_id', 'id');
     }
 
     public function modelFilter()

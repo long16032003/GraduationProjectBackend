@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('phone')->unique();
             $table->string('email')->unique();
             $table->string('password');
+            $table->string('point')->default(0);
             $table->rememberToken();
             $table->timestamps();
         });

@@ -39,10 +39,10 @@ class Table extends Model
 
     protected $fillable = ['name', 'creator_id', 'capacity', 'area', 'status'];
 
-    // public function reservations()
-    // {
-    //     return $this->hasMany(Reservation::class, 'table_id', 'id');
-    // }
+    public function reservation()
+    {
+        return $this->hasMany(Reservation::class, 'table_id', 'id');
+    }
 
     public function creator()
     {
