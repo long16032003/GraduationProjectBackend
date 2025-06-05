@@ -24,6 +24,11 @@ use App\Http\Controllers\Promotion\DeletePromotionController;
 use App\Http\Controllers\Promotion\IndexPromotionController;
 use App\Http\Controllers\Promotion\StorePromotionController;
 use App\Http\Controllers\Promotion\UpdatePromotionController;
+use App\Http\Controllers\Reservation\AvailableTablesController;
+use App\Http\Controllers\Reservation\DeleteReservationController;
+use App\Http\Controllers\Reservation\IndexReservationController;
+use App\Http\Controllers\Reservation\StoreReservationController;
+use App\Http\Controllers\Reservation\UpdateReservationController;
 
 use App\Http\Controllers\Staff\IndexStaffController;
 use App\Http\Controllers\Staff\StoreStaffController;
@@ -82,6 +87,12 @@ Route::middleware('auth')->group(function () {
     Route::post('tables', [StoreTableController::class, 'store'])->name('tables.store');
     Route::put('tables/{table}', [UpdateTableController::class, 'update'])->name('tables.update');
     Route::delete('tables/{table}', [DeleteTableController::class, 'delete'])->name('tables.delete');
+
+    // Admin reservation routes
+    Route::get('/reservations', [IndexReservationController::class, 'index'])->name('reservations.index');
+    Route::post('reservations', [StoreReservationController::class, 'store'])->name('reservations.store');
+    Route::put('reservations/{id}', [UpdateReservationController::class, 'update'])->name('reservations.update');
+    Route::delete('reservations/{id}', [DeleteReservationController::class, 'delete'])->name('reservations.delete');
 });
 Route::get('/dishes', [IndexDishController::class, 'index'])->name('dishes.index');
 
@@ -89,3 +100,15 @@ Route::get('/promotions', [IndexPromotionController::class, 'index'])->name('pro
 
 // Public table routes
 Route::get('/tables', [IndexTableController::class, 'index'])->name('tables.index');
+
+// Kiểm tra bàn trống
+Route::get('/available-tables', [AvailableTablesController::class, 'getAvailableTables']);
+Route::get('/check-availability', [AvailableTablesController::class, 'checkTableAvailability']);
+
+// Public customer reservation routes
+// Route::group(['prefix' => 'customer', 'middleware' => 'auth:customer'], function () {
+//     Route::get('/reservations', [IndexReservationController::class, 'index'])->name('customer.reservations.index');
+//     Route::post('/reservations', [StoreReservationController::class, 'store'])->name('customer.reservations.store');
+//     Route::put('/reservations/{id}', [UpdateReservationController::class, 'update'])->name('customer.reservations.update');
+//     Route::delete('/reservations/{id}', [DeleteReservationController::class, 'delete'])->name('customer.reservations.delete');
+// });
