@@ -19,22 +19,23 @@ class StoreReservationController extends Controller
             'table_id' => 'required|exists:tables,id',
             'phone' => 'required|string',
             'name' => 'required|string',
-            'reservation_date' => 'required|date_format:Y-m-d H:i:s|after_or_equal:now',
+            'reservation_date' => 'required|integer',
             'status' => ['required', Rule::in(['pending', 'confirmed', 'cancelled'])],
             'note' => 'nullable|string',
-            'customer_id' => 'nullable|exists:users,id',
+            'number_of_guests' => 'required|integer',
         ]);
 
         try {
             $data = $validated;
 
-            // Convert reservation_date to timestamp
-            $data['reservation_date'] = Carbon::parse($request->reservation_date);
+            // Convert Unix timestamp to MySQL datetime format
+            $timestamp = (int) $data['reservation_date'];
+            $data['reservation_date'] = Carbon::createFromTimestamp($timestamp)->format('Y-m-d H:i:s');
 
             // If authenticated as user, set creator_id and type
             if (Auth::guard('web')->check()) {
                 $data['creator_id'] = Auth::guard('web')->id();
-                $data['creator_type'] = User::class;
+                $data['creator_type'] = 'staff';
             }
 
             // If authenticated as customer, set customer_id as creator
@@ -42,6 +43,14 @@ class StoreReservationController extends Controller
                 $data['customer_id'] = Auth::guard('customer')->id();
                 $data['creator_id'] = Auth::guard('customer')->id();
                 $data['creator_type'] = 'customer';
+            }
+
+            if(!isset($data['creator_id'])) {
+                $data['creator_id'] = 1;
+            }
+
+            if(!isset($data['creator_type'])) {
+                $data['creator_type'] = 'staff';
             }
 
             $reservation = Reservation::create($data);

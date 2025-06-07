@@ -24,7 +24,6 @@ use App\Http\Controllers\Promotion\DeletePromotionController;
 use App\Http\Controllers\Promotion\IndexPromotionController;
 use App\Http\Controllers\Promotion\StorePromotionController;
 use App\Http\Controllers\Promotion\UpdatePromotionController;
-use App\Http\Controllers\Reservation\AvailableTablesController;
 use App\Http\Controllers\Reservation\DeleteReservationController;
 use App\Http\Controllers\Reservation\IndexReservationController;
 use App\Http\Controllers\Reservation\StoreReservationController;
@@ -32,6 +31,7 @@ use App\Http\Controllers\Reservation\UpdateReservationController;
 
 use App\Http\Controllers\Staff\IndexStaffController;
 use App\Http\Controllers\Staff\StoreStaffController;
+use App\Http\Controllers\Table\AvailableTablesController;
 use App\Http\Controllers\Table\DeleteTableController;
 use App\Http\Controllers\Table\IndexTableController;
 use App\Http\Controllers\Table\StoreTableController;
@@ -112,3 +112,6 @@ Route::get('/check-availability', [AvailableTablesController::class, 'checkTable
 //     Route::put('/reservations/{id}', [UpdateReservationController::class, 'update'])->name('customer.reservations.update');
 //     Route::delete('/reservations/{id}', [DeleteReservationController::class, 'delete'])->name('customer.reservations.delete');
 // });
+
+// Public reservation route
+Route::post('reservations', [StoreReservationController::class, 'store'])->name('reservations.store');

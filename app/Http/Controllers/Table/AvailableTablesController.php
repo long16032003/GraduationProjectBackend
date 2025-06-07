@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Reservation;
+namespace App\Http\Controllers\Table;
 
 use App\Http\Controllers\Controller;
 use App\Models\Reservation;
@@ -16,23 +16,24 @@ class AvailableTablesController extends Controller
      */
     public function getAvailableTables(Request $request): JsonResponse
     {
-        $validated = $request->validate([
-            'date' => 'required|date_format:Y-m-d',
-            'time' => 'required|date_format:H:i',
-            'number_of_guests' => 'required|integer|min:1',
-        ]);
+        // $validated = $request->validate([
+        //     'date' => 'required|date_format:Y-m-d',
+        //     'time' => 'required|date_format:H:i',
+        //     'guests' => 'required|integer|min:1',
+        // ]);
+        // dd($validated);
 
         try {
             // Tạo datetime từ date và time
-            $reservationDateTime = Carbon::parse($validated['date'] . ' ' . $validated['time']);
+            $reservationDateTime = Carbon::parse($request->date . ' ' . $request->time);
+
 
             // Thời gian đặt bàn (giả sử mỗi lượt đặt bàn kéo dài 2 giờ)
             $reservationStartTime = $reservationDateTime->copy();
             $reservationEndTime = $reservationDateTime->copy()->addHours(2);
 
             // Lấy tất cả các bàn có sức chứa phù hợp
-            $tables = Table::where('capacity', '>=', $validated['number_of_guests'])
-                ->where('status', 'available')
+            $tables = Table::where('capacity', '>=', intval($request->guests))
                 ->get();
 
             // Lọc ra các bàn đã được đặt trong khoảng thời gian này
