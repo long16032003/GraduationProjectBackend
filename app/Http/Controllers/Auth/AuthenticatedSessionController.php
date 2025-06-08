@@ -38,7 +38,9 @@ class AuthenticatedSessionController extends Controller
         $request->session()->regenerateToken();
 
         if ($request->wantsJson()) {
-            return response()->json();
+            return response()->json([
+                'message' => 'Bạn đã bị đăng xuất khỏi thiết bị này',
+            ], JsonResponse::HTTP_OK);
         }
 
         return redirect('/');
