@@ -21,7 +21,7 @@ class Reservation extends Model
         'reservation_date',
         'number_of_guests',
         'status',
-        'note',
+        'notes',
         'creator_id',
         'creator_type',
     ];

@@ -19,6 +19,8 @@ return new class extends Migration
             $table->integer('capacity');
             $table->enum('area', Table::AREA_LIST);
             $table->enum('status', Table::STATUS_LIST);
+            $table->unsignedBigInteger('branch_id')->nullable();
+            $table->foreign('branch_id')->references('id')->on('branches')->nullOnDelete();
             $table->timestamps();
         });
     }

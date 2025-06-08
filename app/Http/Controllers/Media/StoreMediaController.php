@@ -14,6 +14,7 @@ class StoreMediaController extends Controller
     public function store(Request $request): JsonResponse {
         try {
             $request->validate([
+                'folder' => 'required',
                 'file' => 'required|file|mimes:jpeg,png,jpg,gif|max:2048',
             ]);
 
@@ -30,23 +31,21 @@ class StoreMediaController extends Controller
             $fileName = Str::uuid() . '.' . $file->getClientOriginalExtension();
 
             // Save to storage/app/public/dishes
-            $path = $file->storeAs('dishes', $fileName, 'public');
+            $path = $file->storeAs($request->folder, $fileName, 'public');
 
             // Create media record
             $media = Media::create([
-                'title' => $request->title ?? $file->getClientOriginalName(),
+                'title' => $file->getClientOriginalName(),
                 'path' => $path,
                 'type' => Media::TYPE_IMAGE,
                 'size' => $file->getSize(),
             ]);
 
-            return response()->json([
+            return new JsonResponse([
                 'success' => true,
                 'message' => 'Upload ảnh thành công',
-                'data' => [
-                    'media' => $media,
-                ]
-            ], 201);
+                'data' => $media
+            ], JsonResponse::HTTP_CREATED);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,

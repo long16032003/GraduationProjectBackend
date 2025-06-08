@@ -20,7 +20,7 @@ return new class extends Migration
             $table->timestamp('reservation_date');
             $table->integer('number_of_guests');
             $table->enum('status', ['pending', 'confirmed', 'cancelled']);
-            $table->text('note')->nullable();
+            $table->text('notes')->nullable();
             $table->bigInteger('creator_id');
             $table->string('creator_type')->default('user');
             $table->index(['creator_id', 'creator_type']);

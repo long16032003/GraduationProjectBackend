@@ -37,7 +37,12 @@ class Table extends Model
         self::STATUS_MAINTENANCE
     ];
 
-    protected $fillable = ['name', 'creator_id', 'capacity', 'area', 'status'];
+    protected $fillable = ['name', 'branch_id', 'creator_id', 'capacity', 'area', 'status'];
+
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class, 'branch_id', 'id');
+    }
 
     public function reservation()
     {

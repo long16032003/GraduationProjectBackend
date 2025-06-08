@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Media extends Model
 {
     protected $table = 'media';
-    public $timestamps = false;
+    public $timestamps = true;
 
     const TYPE_IMAGE = 'image';
     const TYPE_VIDEO = 'video';

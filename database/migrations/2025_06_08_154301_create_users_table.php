@@ -15,11 +15,15 @@ return new class extends Migration
             $table->id();
             $table->uuid()->unique();
             $table->string('name');
+            $table->string('phone');
             $table->string('email')->unique();
+            $table->enum('role', ['service staff', 'admin', 'manager', 'kitchen assistant', 'chef']);
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();
             $table->boolean('superadmin')->default(0);
+            $table->unsignedBigInteger('branch_id')->nullable();
+            $table->foreign('branch_id')->references('id')->on('branches')->nullOnDelete();
             $table->timestamps();
         });
 

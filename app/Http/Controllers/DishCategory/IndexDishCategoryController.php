@@ -14,7 +14,11 @@ class IndexDishCategoryController extends Controller
         try {
             $categories = DishCategory::filter($request->all())->get();
 
-            return new JsonResponse($categories, JsonResponse::HTTP_OK);
+            return new JsonResponse([
+                'status' => 'success',
+                'message' => 'Dish categories fetched successfully',
+                'data' => $categories,
+            ], JsonResponse::HTTP_OK);
         } catch (\Exception $e) {
             return response()->json([
                 'error' => $e->getMessage()

@@ -21,7 +21,7 @@ class StoreReservationController extends Controller
             'name' => 'required|string',
             'reservation_date' => 'required|integer',
             'status' => ['required', Rule::in(['pending', 'confirmed', 'cancelled'])],
-            'note' => 'nullable|string',
+            'notes' => 'nullable|string',
             'number_of_guests' => 'required|integer',
         ]);
 
@@ -33,6 +33,8 @@ class StoreReservationController extends Controller
             $data['reservation_date'] = Carbon::createFromTimestamp($timestamp)->format('Y-m-d H:i:s');
 
             // If authenticated as user, set creator_id and type
+            dd(Auth::guard('web')->check(), Auth::guard('customer')->check());
+
             if (Auth::guard('web')->check()) {
                 $data['creator_id'] = Auth::guard('web')->id();
                 $data['creator_type'] = 'staff';
@@ -45,13 +47,7 @@ class StoreReservationController extends Controller
                 $data['creator_type'] = 'customer';
             }
 
-            if(!isset($data['creator_id'])) {
-                $data['creator_id'] = 1;
-            }
-
-            if(!isset($data['creator_type'])) {
-                $data['creator_type'] = 'staff';
-            }
+            dd($data);
 
             $reservation = Reservation::create($data);
 
