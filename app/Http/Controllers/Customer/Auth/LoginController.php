@@ -24,7 +24,7 @@ class LoginController extends Controller
         // Attempt to authenticate the customer
         if (Auth::guard('customer')->attempt($request->only('phone', 'password'), $request->boolean('remember'))) {
             // Regenerate the session to prevent session fixation
-            $request->session()->regenerate();
+            $request->session()->regenerate(true);
 
             // Get the authenticated customer
             $customer = Auth::guard('customer')->user();

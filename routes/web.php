@@ -90,7 +90,8 @@ Route::middleware('auth')->group(function () {
 
     // Admin reservation routes
     Route::get('/reservations', [IndexReservationController::class, 'index'])->name('reservations.index');
-    Route::post('reservations', [StoreReservationController::class, 'store'])->name('reservations.store');
+//    Route::post('reservations', [StoreReservationController::class, 'store'])
+//        ->name('reservations.store');
     Route::put('reservations/{id}', [UpdateReservationController::class, 'update'])->name('reservations.update');
     Route::delete('reservations/{id}', [DeleteReservationController::class, 'delete'])->name('reservations.delete');
 });
@@ -114,4 +115,7 @@ Route::get('/check-availability', [AvailableTablesController::class, 'checkTable
 // });
 
 // Public reservation route
-Route::post('reservations', [StoreReservationController::class, 'store'])->name('reservations.store');
+Route::middleware(['auth:web,customer'])->group(function () {
+    Route::post('reservations', [StoreReservationController::class, 'store'])->name('reservations.store');
+});
+
