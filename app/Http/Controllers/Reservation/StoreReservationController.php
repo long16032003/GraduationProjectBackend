@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Reservation;
 
 use App\Http\Controllers\Controller;
+use App\Models\Customer;
 use App\Models\Reservation;
 use App\Models\User;
 use Carbon\Carbon;
@@ -32,22 +33,19 @@ class StoreReservationController extends Controller
             $timestamp = (int) $data['reservation_date'];
             $data['reservation_date'] = Carbon::createFromTimestamp($timestamp)->format('Y-m-d H:i:s');
 
-            // If authenticated as user, set creator_id and type
-            dd(Auth::guard('web')->check(), Auth::guard('customer')->check());
+            $user = $request->user();
 
-            if (Auth::guard('web')->check()) {
-                $data['creator_id'] = Auth::guard('web')->id();
+            if ($user instanceof User) {
+                $data['creator_id'] = $user->id;
                 $data['creator_type'] = 'staff';
             }
 
-            // If authenticated as customer, set customer_id as creator
-            if (Auth::guard('customer')->check()) {
-                $data['customer_id'] = Auth::guard('customer')->id();
-                $data['creator_id'] = Auth::guard('customer')->id();
+//             If authenticated as customer, set customer_id as creator
+            if ($user instanceof Customer) {
+                $data['customer_id'] = $user->id;
+                $data['creator_id'] = $user->id;
                 $data['creator_type'] = 'customer';
             }
-
-            dd($data);
 
             $reservation = Reservation::create($data);
 
