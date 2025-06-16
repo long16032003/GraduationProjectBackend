@@ -21,7 +21,7 @@ return new class extends Migration
                   ->references('id')
                   ->on('media')
                 ->nullOnDelete();
-            $table->string('price');
+            $table->integer('price');
             $table->foreignId('category_id')->constrained('dish_categories');
             $table->boolean('is_active')->default(true);
             $table->timestamps();

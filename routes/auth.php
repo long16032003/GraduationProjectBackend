@@ -11,11 +11,10 @@ use App\Http\Controllers\Customer\Auth\LoginController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware('guest')->group(function () {
+Route::middleware('guest:web')->group(function () {
     Route::post('register', [RegisteredUserController::class, 'store']);
 
     Route::post('login', [AuthenticatedSessionController::class, 'store']);
-    Route::post('login-customer', [LoginController::class, 'login'])->name('login-customer');
 
     Route::post('forgot-password', [PasswordResetLinkController::class, 'store'])
         ->name('password.email');
@@ -42,15 +41,5 @@ Route::middleware('auth:web')->group(function () {
     Route::get('@me', static function (Request $request) {
         return response()->json($request->user('web'));
     })->name('@me');
-});
-
-// Customer authenticated routes
-Route::middleware('auth:customer')->group(function () {
-    Route::post('logout-customer', [LoginController::class, 'logout'])
-        ->name('logout-customer');
-
-    Route::get('@customer', static function (Request $request) {
-        return response()->json($request->user('customer'));
-    })->name('@customer');
 });
 

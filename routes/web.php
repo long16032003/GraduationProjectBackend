@@ -1,8 +1,14 @@
 <?php
 
+
 use App\Http\Controllers\CsrfCookieController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\PermissionController;
+
+use App\Http\Controllers\Bill\IndexBillController;
+use App\Http\Controllers\Bill\StoreBillController;
+use App\Http\Controllers\Bill\UpdateBillController;
+use App\Http\Controllers\Bill\DeleteBillController;
 
 use App\Http\Controllers\Dish\DeleteDishController;
 use App\Http\Controllers\Dish\IndexDishController;
@@ -13,6 +19,7 @@ use App\Http\Controllers\DishCategory\DeleteDishCategoryController;
 use App\Http\Controllers\DishCategory\IndexDishCategoryController;
 use App\Http\Controllers\DishCategory\StoreDishCategoryController;
 use App\Http\Controllers\DishCategory\UpdateDishCategoryController;
+
 use App\Http\Controllers\Media\StoreMediaController;
 use App\Http\Controllers\Post\DeletePostController;
 use App\Http\Controllers\Post\IndexPostController;
@@ -37,6 +44,8 @@ use App\Http\Controllers\Table\IndexTableController;
 use App\Http\Controllers\Table\StoreTableController;
 use App\Http\Controllers\Table\UpdateTableController;
 use App\Http\Controllers\Upload\UploadImageController;
+use App\Http\Controllers\Media\MediaController;
+use App\Http\Controllers\Statistics\StatisticsController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', static function () {
@@ -57,6 +66,7 @@ Route::group(['prefix' => 'role', 'name' => 'role'], static function () {
 
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';
+// require __DIR__.'/customer.php';
 
 Route::middleware('auth')->group(function () {
     Route::post('/upload-image', [StoreMediaController::class, 'store'])->name('upload-image');
@@ -105,13 +115,29 @@ Route::get('/tables', [IndexTableController::class, 'index'])->name('tables.inde
 Route::get('/available-tables', [AvailableTablesController::class, 'getAvailableTables']);
 Route::get('/check-availability', [AvailableTablesController::class, 'checkTableAvailability']);
 
-// Public customer reservation routes
-// Route::group(['prefix' => 'customer', 'middleware' => 'auth:customer'], function () {
-//     Route::get('/reservations', [IndexReservationController::class, 'index'])->name('customer.reservations.index');
-//     Route::post('/reservations', [StoreReservationController::class, 'store'])->name('customer.reservations.store');
-//     Route::put('/reservations/{id}', [UpdateReservationController::class, 'update'])->name('customer.reservations.update');
-//     Route::delete('/reservations/{id}', [DeleteReservationController::class, 'delete'])->name('customer.reservations.delete');
-// });
-
 // Public reservation route
 Route::post('reservations', [StoreReservationController::class, 'store'])->name('reservations.store');
+
+// Public bill routes
+Route::post('bills', [StoreBillController::class, 'store'])->name('bills.store');
+Route::get('bills', [IndexBillController::class, 'index'])->name('bills.index');
+Route::put('bills/{id}', [UpdateBillController::class, 'update'])->name('bills.update');
+Route::delete('bills/{id}', [DeleteBillController::class, 'delete'])->name('bills.delete');
+
+// Media routes
+Route::post('/media/upload', [MediaController::class, 'upload'])->name('media.upload');
+Route::delete('/media/delete', [MediaController::class, 'delete'])->name('media.delete');
+Route::get('/media/list', [MediaController::class, 'list'])->name('media.list');
+
+// Statistics routes - Require authentication and proper role
+Route::middleware(['auth'])->group(function () {
+    // Dashboard statistics - quick overview
+    Route::get('/statistics/dashboard', [StatisticsController::class, 'getDashboard'])->name('statistics.dashboard');
+
+    // Detailed revenue statistics with filters
+    Route::get('/statistics/revenue', [StatisticsController::class, 'getRevenue'])->name('statistics.revenue');
+});
+
+
+
+

@@ -113,4 +113,42 @@ class TableFilter extends ModelFilter
 
         });
     }
+
+    public function available_v2($active)  // check available table
+    {
+        if(!$active) {
+            return $this;
+        }
+
+        $reservationDate = $this->input('date');
+        $reservationTime = $this->input('time');
+        $reservationDateTime = Carbon::parse($reservationDate . ' ' . $reservationTime);
+
+        // Khung giờ reservation mới (2 tiếng)
+        $startTime = $reservationDateTime->copy();
+        $endTime = $reservationDateTime->copy()->addHours(2);
+
+        return $this->where('status', 'occupied')
+            // Không có bill active
+            ->whereDoesntHave('bills', function (Builder $query) {
+                $query->whereNotIn('status', ['paid', 'cancelled']);
+            })
+            // Không có reservation trùng
+            ->whereDoesntHave('reservations', function (Builder $query) use ($startTime, $endTime) {
+                $query->where('status', '!=', 'cancelled')
+                    ->where('reservation_date', $startTime->format('Y-m-d'))
+                    ->where(function($q) use ($startTime, $endTime) {
+                        // Kiểm tra overlap: reservation khác có thời gian trùng không
+                        $q->where(function($overlap) use ($startTime, $endTime) {
+                            $overlap->where('reservation_time', '>=', $startTime->format('H:i:s'))
+                                ->where('reservation_time', '<', $endTime->format('H:i:s'));
+                        })
+                        ->orWhere(function($overlap) use ($startTime, $endTime) {
+                            // Reservation khác kết thúc sau khi reservation mới bắt đầu
+                            $overlap->whereRaw("ADDTIME(reservation_time, '02:00:00') > ?", [$startTime->format('H:i:s')])
+                                ->where('reservation_time', '<', $startTime->format('H:i:s'));
+                        });
+                    });
+            });
+    }
 }
