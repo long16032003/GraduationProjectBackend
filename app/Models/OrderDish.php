@@ -18,10 +18,10 @@ class OrderDish extends Model
     ];
 
     public function order(){
-        return $this->belongsTo(Order::class);
+        return $this->belongsTo(Order::class, 'order_id', 'id');
     }
 
     public function dish(){
-        return $this->belongsTo(Dish::class);
+        return $this->belongsTo(Dish::class, 'dish_id', 'id');
     }
 }

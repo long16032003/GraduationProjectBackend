@@ -9,7 +9,7 @@ use App\Http\Controllers\Bill\IndexBillController;
 use App\Http\Controllers\Bill\StoreBillController;
 use App\Http\Controllers\Bill\UpdateBillController;
 use App\Http\Controllers\Bill\DeleteBillController;
-
+use App\Http\Controllers\Bill\ShowBillController;
 use App\Http\Controllers\Dish\DeleteDishController;
 use App\Http\Controllers\Dish\IndexDishController;
 use App\Http\Controllers\Dish\StoreDishController;
@@ -45,7 +45,11 @@ use App\Http\Controllers\Table\StoreTableController;
 use App\Http\Controllers\Table\UpdateTableController;
 use App\Http\Controllers\Upload\UploadImageController;
 use App\Http\Controllers\Media\MediaController;
+use App\Http\Controllers\Order\IndexOrderController;
+use App\Http\Controllers\Order\StoreOrderController;
+use App\Http\Controllers\PromotionCode\IndexPromotionCodeController;
 use App\Http\Controllers\Statistics\StatisticsController;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', static function () {
@@ -66,60 +70,32 @@ Route::group(['prefix' => 'role', 'name' => 'role'], static function () {
 
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';
-// require __DIR__.'/customer.php';
+require __DIR__.'/customer.php';
 
-Route::middleware('auth')->group(function () {
-    Route::post('/upload-image', [StoreMediaController::class, 'store'])->name('upload-image');
+Route::get('/posts', [IndexPostController::class, 'index'])->name('posts.index');
+Route::get('posts/{id}', [ShowPostController::class, 'show'])->name('posts.show');
 
-    Route::post('dish-categories', [StoreDishCategoryController::class, 'store'])->name('dish-categories.store');
-    Route::get('/dish-categories', [IndexDishCategoryController::class, 'index'])->name('dish-categories.index');
-    Route::put('dish-categories/{id}', [UpdateDishCategoryController::class, 'update'])->name('dish-categories.update');
-    Route::delete('dish-categories/{id}', [DeleteDishCategoryController::class, 'delete'])->name('dish-categories.delete');
-
-    Route::post('posts', [StorePostController::class, 'store'])->name('posts.store');
-    Route::get('/posts', [IndexPostController::class, 'index'])->name('posts.index');
-    Route::put('posts/{id}', [UpdatePostController::class, 'update'])->name('posts.update');
-    Route::delete('posts/{id}', [DeletePostController::class, 'delete'])->name('posts.delete');
-    Route::get('posts/{id}', [ShowPostController::class, 'show'])->name('posts.show');
-
-    Route::post('staffs', [StoreStaffController::class, 'store'])->name('staffs.store');
-    Route::get('/staffs', [IndexStaffController::class, 'index'])->name('staffs.index');
-
-    Route::post('dishes', [StoreDishController::class, 'store'])->name('dishes.store');
-    Route::put('dishes/{id}', [UpdateDishController::class, 'update'])->name('dishes.update');
-    Route::delete('dishes/{id}', [DeleteDishController::class, 'delete'])->name('dishes.delete');
-
-    Route::post('promotions', [StorePromotionController::class, 'store'])->name('promotions.store');
-    Route::put('promotions/{id}', [UpdatePromotionController::class, 'update'])->name('promotions.update');
-    Route::delete('promotions/{id}', [DeletePromotionController::class, 'delete'])->name('promotions.delete');
-
-    // Table routes
-    Route::post('tables', [StoreTableController::class, 'store'])->name('tables.store');
-    Route::put('tables/{table}', [UpdateTableController::class, 'update'])->name('tables.update');
-    Route::delete('tables/{table}', [DeleteTableController::class, 'delete'])->name('tables.delete');
-
-    // Admin reservation routes
-    Route::get('/reservations', [IndexReservationController::class, 'index'])->name('reservations.index');
-    Route::put('reservations/{id}', [UpdateReservationController::class, 'update'])->name('reservations.update');
-    Route::delete('reservations/{id}', [DeleteReservationController::class, 'delete'])->name('reservations.delete');
-});
 Route::get('/dishes', [IndexDishController::class, 'index'])->name('dishes.index');
 
 Route::get('/promotions', [IndexPromotionController::class, 'index'])->name('promotions.index');
 
 // Public table routes
-Route::get('/tables', [IndexTableController::class, 'index'])->name('tables.index');
+
 
 // Kiểm tra bàn trống
-Route::get('/available-tables', [AvailableTablesController::class, 'getAvailableTables']);
-Route::get('/check-availability', [AvailableTablesController::class, 'checkTableAvailability']);
-
+Route::get('/dish-categories', [IndexDishCategoryController::class, 'index'])->name('dish-categories.index');
 
 // Public bill routes
 Route::post('bills', [StoreBillController::class, 'store'])->name('bills.store');
 Route::get('bills', [IndexBillController::class, 'index'])->name('bills.index');
+Route::get('bills/{id}', [ShowBillController::class, 'show'])->name('bills.show');
 Route::put('bills/{id}', [UpdateBillController::class, 'update'])->name('bills.update');
 Route::delete('bills/{id}', [DeleteBillController::class, 'delete'])->name('bills.delete');
+
+Route::post('orders', [StoreOrderController::class, 'store'])->name('orders.store');
+Route::get('orders', [IndexOrderController::class, 'index'])->name('orders.index');
+// Route::put('orders/{id}', [UpdateOrderController::class, 'update'])->name('orders.update');
+// Route::delete('orders/{id}', [DeleteOrderController::class, 'delete'])->name('orders.delete');
 
 // Media routes
 Route::post('/media/upload', [MediaController::class, 'upload'])->name('media.upload');
@@ -130,12 +106,21 @@ Route::get('/media/list', [MediaController::class, 'list'])->name('media.list');
 Route::middleware(['auth'])->group(function () {
     // Dashboard statistics - quick overview
     Route::get('/statistics/dashboard', [StatisticsController::class, 'getDashboard'])->name('statistics.dashboard');
-
     // Detailed revenue statistics with filters
     Route::get('/statistics/revenue', [StatisticsController::class, 'getRevenue'])->name('statistics.revenue');
 });
 
 Route::middleware(['auth:web,customer'])->group(function () {
+    Route::get('@me', static function (Request $request) {
+        return response()->json($request->user());
+    })->name('@me');
+    Route::get('/tables', [IndexTableController::class, 'index'])->name('tables.index');
+
+    Route::get('/available-tables', [AvailableTablesController::class, 'getAvailableTables']);
+    Route::get('/check-availability', [AvailableTablesController::class, 'checkTableAvailability']);
+
+    Route::get('/promotion_codes', [IndexPromotionCodeController::class, 'index'])->name('promotion_codes.index');
+
     Route::prefix('reservations')->group(function () {
         Route::get('/', [IndexReservationController::class, 'index'])->name('reservations.index');
         Route::post('/', [StoreReservationController::class, 'store'])->name('reservations.store');

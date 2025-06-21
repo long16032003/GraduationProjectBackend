@@ -6,7 +6,10 @@ use App\Http\Controllers\Bill\IndexBillController;
 use App\Http\Controllers\Bill\StoreBillController;
 use App\Http\Controllers\Bill\UpdateBillController;
 use App\Http\Controllers\Bill\DeleteBillController;
+use App\Http\Controllers\Customer\Auth\CustomerController;
 use App\Http\Controllers\Customer\Auth\LoginController;
+use App\Http\Controllers\PromotionCode\IndexPromotionCodeController;
+use App\Http\Controllers\PromotionCode\StorePromotionCodeController;
 use App\Http\Controllers\Reservation\IndexReservationController;
 use App\Http\Controllers\Reservation\StoreReservationController;
 use App\Http\Controllers\Reservation\UpdateReservationController;
@@ -25,14 +28,13 @@ Route::middleware('auth:customer')->group(function () {
         return response()->json($request->user('customer'));
     })->name('@customer');
 
-    Route::get('/bills', [IndexBillController::class, 'index'])->name('bills.index');
-    // Route::post('/bills', [StoreBillController::class, 'store'])->name('bills.store');
-    // Route::put('/bills/{id}', [UpdateBillController::class, 'update'])->name('bills.update');
-    // Route::delete('/bills/{id}', [DeleteBillController::class, 'delete'])->name('bills.delete');
+    Route::get('/promotion_codes', [IndexPromotionCodeController::class, 'index'])->name('promotion_codes.index');
+    Route::post('/promotion_codes', [StorePromotionCodeController::class, 'store'])->name('promotion_codes.store');
 
-    Route::get('/reservations', [IndexReservationController::class, 'index'])->name('reservations.index');
-    Route::post('/reservations', [StoreReservationController::class, 'store'])->name('reservations.store');
-    Route::put('/reservations/{id}', [UpdateReservationController::class, 'update'])->name('reservations.update');
-    Route::delete('/reservations/{id}', [DeleteReservationController::class, 'delete'])->name('reservations.delete');
+    Route::get('/bills', [IndexBillController::class, 'index'])->name('bills.index');
+
+    Route::get('/customers/{id}', [CustomerController::class, 'show'])->name('customers.show');
+    Route::put('/customers/{id}', [CustomerController::class, 'update'])->name('customers.update');
+
 });
 

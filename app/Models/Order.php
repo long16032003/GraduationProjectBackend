@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\ModelFilters\OrderFilter;
 use EloquentFilter\Filterable;
 use Illuminate\Database\Eloquent\Model;
 
@@ -40,18 +41,23 @@ class Order extends Model
     ];
 
     public function table(){
-        return $this->belongsTo(Table::class);
+        return $this->belongsTo(Table::class, 'table_id', 'id');
     }
 
     public function bill(){
-        return $this->belongsTo(Bill::class);
+        return $this->belongsTo(Bill::class, 'bill_id', 'id');
     }
 
     public function creator(){
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'creator_id', 'id');
     }
 
-    public function orderDishes(){
-        return $this->hasMany(OrderDish::class);
+    public function order_dishes(){
+        return $this->hasMany(OrderDish::class, 'order_id', 'id');
+    }
+
+    public function modelFilter()
+    {
+        return $this->provideFilter(OrderFilter::class);
     }
 }

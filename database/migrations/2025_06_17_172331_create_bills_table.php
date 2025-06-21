@@ -14,14 +14,15 @@ return new class extends Migration
     {
         Schema::create('bills', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('creator_id')->constrained('users');
+            $table->foreignId('creator_id')->nullable()->constrained('users')->onDelete('set null');
             $table->foreignId('customer_id')->nullable()->constrained('customers');
             $table->string('customer_phone');
+            $table->string('customer_name')->nullable();
             $table->foreignId('table_id')->constrained('tables');
-            $table->enum('payment_method', [Bill::PAYMENT_METHOD_CASH, Bill::PAYMENT_METHOD_CARD, Bill::PAYMENT_METHOD_BOTH]);
-            $table->decimal('total_amount', 10, 2);
+            $table->enum('payment_method', [Bill::PAYMENT_METHOD_CASH, Bill::PAYMENT_METHOD_CARD, Bill::PAYMENT_METHOD_BOTH])->nullable();
+            $table->decimal('total_amount', 10, 2)->default(0);
             $table->decimal('discount_amount', 10, 2)->default(0);
-            $table->enum('status', [Bill::STATUS_PAID, Bill::STATUS_UNPAID, Bill::STATUS_CANCELLED]);
+            $table->enum('status', [Bill::STATUS_PAID, Bill::STATUS_UNPAID, Bill::STATUS_CANCELLED])->default(Bill::STATUS_UNPAID);
             $table->text('notes')->nullable();
             $table->timestamps();
         });

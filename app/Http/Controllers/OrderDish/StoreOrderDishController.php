@@ -1,25 +1,26 @@
 <?php
 
-namespace App\Http\Controllers\Bill;
+namespace App\Http\Controllers\OrderDish;
 
 use App\Http\Controllers\Controller;
-use App\Models\Bill;
-use App\Models\Customer;
+use App\Models\OrderDish;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
-class StoreBillController extends Controller
+class StoreOrderDishController extends Controller
 {
     public function store(Request $request): JsonResponse
     {
         $auth = Auth::user();
         $validator = Validator::make($request->all(), [
             'table_id' => 'required|exists:tables,id',
-            'customer_name' => 'nullable|string',
-            'customer_phone' => 'required|string',
-            'notes' => 'nullable|string',
+            'bill_id' => 'required|exists:bills,id',
+            'dish_id' => 'required|exists:dishes,id',
+            'quantity' => 'required|integer',
+            'price' => 'required|numeric',
+            'total_price' => 'required|numeric',
         ]);
 
         if ($validator->fails()) {
@@ -32,26 +33,22 @@ class StoreBillController extends Controller
         $dataCreate = [
             'creator_id' => $auth->id,
             'table_id' => $request->table_id,
-            'customer_phone' => $request->customer_phone,
-            'customer_name' => isset($request->customer_name) ? $request->customer_name : null,
-            'notes' => isset($request->notes) ? $request->notes : null,
+            'bill_id' => $request->bill_id,
+            'product_id' => $request->product_id,
+            'quantity' => $request->quantity,
+            'price' => $request->price,
+            'total_price' => $request->total_price,
         ];
 
-        $customer = Customer::where('phone', $request->customer_phone)->first();
-        if($customer) {
-            $dataCreate['customer_id'] = $customer->id;
-            $dataCreate['customer_name'] = $customer->name;
-        }
-
         try {
-            $bill = Bill::create($dataCreate);
+            $orderDish = OrderDish::create($dataCreate);
 
-            return new JsonResponse($bill, JsonResponse::HTTP_CREATED);
+            return new JsonResponse($orderDish, JsonResponse::HTTP_CREATED);
 
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Tạo hóa đơn thất bại',
+                'message' => 'Tạo đơn món thất bại',
                 'error' => $e->getMessage()
             ], 500);
         }

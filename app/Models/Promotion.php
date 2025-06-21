@@ -19,14 +19,28 @@ class Promotion extends Model
         'start_date',
         'end_date',
         'discount_percentage',
+        'discount_amount',
+        'discount_type',
+        'min_order_amount',
+        'max_discount_amount',
         'required_points',
-        'limit_per_user_count',
+        'image_id',
+        'limit',
     ];
 
     public function creator()
     {
         return $this->belongsTo(User::class, 'creator_id');
     }
+    public function image()
+    {
+        return $this->belongsTo(Media::class, 'image_id');
+    }
+    public function promotion_codes()
+    {
+        return $this->hasMany(PromotionCode::class);
+    }
+
     public function modelFilter()
     {
         return $this->provideFilter(PromotionFilter::class);

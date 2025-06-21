@@ -44,9 +44,9 @@ class PromotionFilter extends ModelFilter
         return $this->where('required_points', '>=', $value);
     }
 
-    public function limitPerUserCount($value)
+    public function limit($value)
     {
-        return $this->where('limit_per_user_count', '>=', $value);
+        return $this->where('limit', '>=', $value);
     }
 
     public function search($value)
@@ -57,6 +57,6 @@ class PromotionFilter extends ModelFilter
                     ->orWhere('end_date', 'like', "%$value%")
                     ->orWhere('discount_percentage', 'like', "%$value%")
                     ->orWhere('required_points', 'like', "%$value%")
-                    ->orWhere('limit_per_user_count', 'like', "%$value%");
+                    ->orWhere('limit', 'like', "%$value%");
     }
 }

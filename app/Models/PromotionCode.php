@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\ModelFilters\PromotionCodeFilter;
 use Illuminate\Database\Eloquent\Model;
 use EloquentFilter\Filterable;
 
@@ -21,9 +22,12 @@ class PromotionCode extends Model
     {
         return $this->belongsTo(Promotion::class);
     }
-
     public function customer()
     {
         return $this->belongsTo(Customer::class);
+    }
+    public function modelFilter()
+    {
+        return $this->provideFilter(PromotionCodeFilter::class);
     }
 }
