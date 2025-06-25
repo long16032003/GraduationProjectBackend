@@ -4,6 +4,7 @@
 use App\Http\Controllers\CsrfCookieController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\PermissionController;
+use App\Http\Controllers\Settings\SiteSettingController;
 
 use App\Http\Controllers\Bill\IndexBillController;
 use App\Http\Controllers\Bill\StoreBillController;
@@ -49,6 +50,7 @@ use App\Http\Controllers\Order\IndexOrderController;
 use App\Http\Controllers\Order\StoreOrderController;
 use App\Http\Controllers\PromotionCode\IndexPromotionCodeController;
 use App\Http\Controllers\Statistics\StatisticsController;
+use App\Http\Controllers\Payment\VNPayController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -86,11 +88,14 @@ Route::get('/promotions', [IndexPromotionController::class, 'index'])->name('pro
 Route::get('/dish-categories', [IndexDishCategoryController::class, 'index'])->name('dish-categories.index');
 
 // Public bill routes
-Route::post('bills', [StoreBillController::class, 'store'])->name('bills.store');
-Route::get('bills', [IndexBillController::class, 'index'])->name('bills.index');
-Route::get('bills/{id}', [ShowBillController::class, 'show'])->name('bills.show');
-Route::put('bills/{id}', [UpdateBillController::class, 'update'])->name('bills.update');
-Route::delete('bills/{id}', [DeleteBillController::class, 'delete'])->name('bills.delete');
+Route::prefix('bills')->group(function () {
+    Route::post('', [StoreBillController::class, 'store'])->name('bills.store');
+    Route::get('', [IndexBillController::class, 'index'])->name('bills.index');
+    Route::get('/{id}', [ShowBillController::class, 'show'])->name('bills.show');
+    Route::put('/{id}', [UpdateBillController::class, 'update'])->name('bills.update');
+    Route::post('/{id}/pay', [UpdateBillController::class, 'pay'])->name('bills.pay');
+    Route::delete('/{id}', [DeleteBillController::class, 'delete'])->name('bills.delete');
+});
 
 Route::post('orders', [StoreOrderController::class, 'store'])->name('orders.store');
 Route::get('orders', [IndexOrderController::class, 'index'])->name('orders.index');
@@ -129,3 +134,23 @@ Route::middleware(['auth:web,customer'])->group(function () {
     });
 });
 
+Route::prefix('vnpay')->group(function () {
+    Route::post('/create-payment', [VNPayController::class, 'createPayment'])->name('vnpay.create');
+    Route::get('/return', [VNPayController::class, 'returnUrl'])->name('vnpay.return');
+    Route::get('/ipn', [VNPayController::class, 'ipn'])->name('vnpay.ipn');
+    Route::get('/payment/{payment}', [VNPayController::class, 'getPaymentStatus'])->name('vnpay.status');
+    Route::get('/history/{bill}', [VNPayController::class, 'getPaymentHistory'])->name('vnpay.history');
+    Route::post('/cancel/{payment}', [VNPayController::class, 'cancelPayment'])->name('vnpay.cancel');
+});
+
+// Site Settings routes - Require authentication
+Route::middleware(['auth:web'])->prefix('site-settings')->group(function () {
+    Route::get('/', [SiteSettingController::class, 'index'])->name('site-settings.index');
+    Route::get('/{key}', [SiteSettingController::class, 'show'])->name('site-settings.show');
+    Route::post('/', [SiteSettingController::class, 'store'])->name('site-settings.store');
+    Route::put('/', [SiteSettingController::class, 'update'])->name('site-settings.update');
+    // Route với pattern số để hỗ trợ refine format
+    Route::put('/{id}', [SiteSettingController::class, 'update'])->where('id', '[0-9]+')->name('site-settings.update-by-id');
+    Route::put('/{key}', [SiteSettingController::class, 'updateSingle'])->name('site-settings.update-single');
+    Route::delete('/{key}', [SiteSettingController::class, 'destroy'])->name('site-settings.destroy');
+});

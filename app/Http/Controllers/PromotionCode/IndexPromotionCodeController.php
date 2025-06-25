@@ -14,8 +14,7 @@ class IndexPromotionCodeController extends Controller
     {
         $auth = Auth::user();
 
-        $query = PromotionCode::with(['promotion', 'customer'])
-            ->orderBy('created_at', 'desc');
+        $query = PromotionCode::filter($request->all())->with(['promotion', 'customer']);
 
         // Filter by customer_id if provided
         if ($request->has('customer_id')) {

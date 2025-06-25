@@ -15,6 +15,14 @@ use App\Http\Controllers\Dish\UpdateDishController;
 use App\Http\Controllers\DishCategory\DeleteDishCategoryController;
 use App\Http\Controllers\DishCategory\StoreDishCategoryController;
 use App\Http\Controllers\DishCategory\UpdateDishCategoryController;
+use App\Http\Controllers\EnterIngredient\IndexEnterIngredientController;
+use App\Http\Controllers\EnterIngredient\StoreEnterIngredientController;
+use App\Http\Controllers\ExportIngredient\IndexExportIngredientController;
+use App\Http\Controllers\ExportIngredient\StoreExportIngredientController;
+use App\Http\Controllers\Ingredient\DeleteIngredientController;
+use App\Http\Controllers\Ingredient\IndexIngredientController;
+use App\Http\Controllers\Ingredient\StoreIngredientController;
+use App\Http\Controllers\Ingredient\UpdateIngredientController;
 use App\Http\Controllers\Media\StoreMediaController;
 use App\Http\Controllers\Post\DeletePostController;
 use App\Http\Controllers\Post\StorePostController;
@@ -22,6 +30,7 @@ use App\Http\Controllers\Post\UpdatePostController;
 use App\Http\Controllers\Promotion\DeletePromotionController;
 use App\Http\Controllers\Promotion\StorePromotionController;
 use App\Http\Controllers\Promotion\UpdatePromotionController;
+use App\Http\Controllers\Settings\SiteSettingController;
 use App\Http\Controllers\Staff\IndexStaffController;
 use App\Http\Controllers\Staff\StoreStaffController;
 use App\Http\Controllers\Table\DeleteTableController;
@@ -68,8 +77,8 @@ Route::middleware('auth:web')->group(function () {
     Route::put('posts/{id}', [UpdatePostController::class, 'update'])->name('posts.update');
     Route::delete('posts/{id}', [DeletePostController::class, 'delete'])->name('posts.delete');
 
-    Route::post('staffs', [StoreStaffController::class, 'store'])->name('staffs.store');
-    Route::get('/staffs', [IndexStaffController::class, 'index'])->name('staffs.index');
+    Route::post('users', [StoreStaffController::class, 'store'])->name('users.store');
+    Route::get('/users', [IndexStaffController::class, 'index'])->name('users.index');
 
     Route::post('dishes', [StoreDishController::class, 'store'])->name('dishes.store');
     Route::put('dishes/{id}', [UpdateDishController::class, 'update'])->name('dishes.update');
@@ -85,5 +94,16 @@ Route::middleware('auth:web')->group(function () {
     Route::delete('tables/{table}', [DeleteTableController::class, 'delete'])->name('tables.delete');
 
     Route::get('customers', [CustomerController::class, 'index'])->name('customers.index');
+
+    Route::post('ingredients', [StoreIngredientController::class, 'store'])->name('ingredients.store');
+    Route::get('ingredients', [IndexIngredientController::class, 'index'])->name('ingredients.index');
+    Route::put('ingredients/{id}', [UpdateIngredientController::class, 'update'])->name('ingredients.update');
+    Route::delete('ingredients/{id}', [DeleteIngredientController::class, 'delete'])->name('ingredients.delete');
+
+    Route::post('enter-ingredients', [StoreEnterIngredientController::class, 'store'])->name('enter-ingredients.store');
+    Route::get('enter-ingredients', [IndexEnterIngredientController::class, 'index'])->name('enter-ingredients.index');
+
+    Route::post('export-ingredients', [StoreExportIngredientController::class, 'store'])->name('export-ingredients.store');
+    Route::get('export-ingredients', [IndexExportIngredientController::class, 'index'])->name('export-ingredients.index');
 });
 

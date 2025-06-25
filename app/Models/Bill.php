@@ -29,7 +29,8 @@ class Bill extends Model
 
     const PAYMENT_METHOD_CASH = 'cash';
     const PAYMENT_METHOD_CARD = 'card';
-    const PAYMENT_METHOD_BOTH = 'both';
+    const PAYMENT_METHOD_MOMO = 'momo';
+    const PAYMENT_METHOD_VNPAY = 'vnpay';
 
     protected $fillable = [
         'creator_id',
@@ -70,6 +71,16 @@ class Bill extends Model
     public function orders()
     {
         return $this->hasMany(Order::class, 'bill_id', 'id');
+    }
+
+    public function payments()
+    {
+        return $this->hasMany(Payment::class, 'bill_id', 'id');
+    }
+
+    public function latestPayment()
+    {
+        return $this->hasOne(Payment::class, 'bill_id', 'id')->latest();
     }
 
     public function modelFilter()

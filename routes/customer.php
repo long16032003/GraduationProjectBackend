@@ -28,7 +28,6 @@ Route::middleware('auth:customer')->group(function () {
         return response()->json($request->user('customer'));
     })->name('@customer');
 
-    Route::get('/promotion_codes', [IndexPromotionCodeController::class, 'index'])->name('promotion_codes.index');
     Route::post('/promotion_codes', [StorePromotionCodeController::class, 'store'])->name('promotion_codes.store');
 
     Route::get('/bills', [IndexBillController::class, 'index'])->name('bills.index');
