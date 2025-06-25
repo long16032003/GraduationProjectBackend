@@ -44,13 +44,13 @@ trait HasAdvancedFilters
         }
 
         // Handle single filter object
-        if (isset($filters['field']) && isset($filters['value'])) {
+        if (isset($filters['field']) && array_key_exists('value', $filters)) {
             return $this->applyFilter($filters);
         }
 
         // Handle array of filters
         foreach ($filters as $filter) {
-            if (isset($filter['field']) && isset($filter['value'])) {
+            if (isset($filter['field']) && array_key_exists('value', $filter)) {
                 $this->applyFilter($filter);
             }
         }
@@ -152,6 +152,15 @@ trait HasAdvancedFilters
      */
     private function applyDateFilter($field, $value, $operator)
     {
+        // Handle null values explicitly
+        if ($value === null) {
+            return match($operator) {
+                'eq' => $this->whereNull($field),
+                'ne' => $this->whereNotNull($field),
+                default => $this->whereNull($field),
+            };
+        }
+
         return match($operator) {
             'eq' => $this->whereDate($field, $value),
             'ne' => $this->whereDate($field, '!=', $value),

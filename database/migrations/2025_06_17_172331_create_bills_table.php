@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('customer_phone');
             $table->string('customer_name')->nullable();
             $table->foreignId('table_id')->constrained('tables');
-            $table->enum('payment_method', [Bill::PAYMENT_METHOD_CASH, Bill::PAYMENT_METHOD_CARD, Bill::PAYMENT_METHOD_BOTH])->nullable();
+            $table->enum('payment_method', [Bill::PAYMENT_METHOD_CASH, Bill::PAYMENT_METHOD_CARD, Bill::PAYMENT_METHOD_MOMO, Bill::PAYMENT_METHOD_VNPAY])->nullable();
             $table->decimal('total_amount', 10, 2)->default(0);
             $table->decimal('discount_amount', 10, 2)->default(0);
             $table->enum('status', [Bill::STATUS_PAID, Bill::STATUS_UNPAID, Bill::STATUS_CANCELLED])->default(Bill::STATUS_UNPAID);

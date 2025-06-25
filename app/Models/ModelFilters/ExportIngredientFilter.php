@@ -5,15 +5,16 @@ namespace App\Models\ModelFilters;
 use App\Models\ModelFilters\Traits\HasAdvancedFilters;
 use EloquentFilter\ModelFilter;
 
-class PromotionCodeFilter extends ModelFilter
+class ExportIngredientFilter extends ModelFilter
 {
     use HasAdvancedFilters;
 
-    protected $likeFields = ['code'];
+    protected $likeFields = ['ingredient_id'];
 
-    protected $numericFields = ['id', 'promotion_id', 'customer_id'];
+    protected $numericFields = ['id', 'quantity', 'creator_id'];
 
-    protected $dateFields = ['used_at'];
+    protected $dateFields = ['created_at', 'updated_at'];
+
     /**
     * Related Models that have ModelFilters as well as the method on the ModelFilter
     * As [relationMethod => [input_key1, input_key2]].

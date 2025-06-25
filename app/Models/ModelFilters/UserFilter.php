@@ -5,15 +5,10 @@ namespace App\Models\ModelFilters;
 use App\Models\ModelFilters\Traits\HasAdvancedFilters;
 use EloquentFilter\ModelFilter;
 
-class PromotionCodeFilter extends ModelFilter
+class UserFilter extends ModelFilter
 {
     use HasAdvancedFilters;
 
-    protected $likeFields = ['code'];
-
-    protected $numericFields = ['id', 'promotion_id', 'customer_id'];
-
-    protected $dateFields = ['used_at'];
     /**
     * Related Models that have ModelFilters as well as the method on the ModelFilter
     * As [relationMethod => [input_key1, input_key2]].
@@ -21,4 +16,12 @@ class PromotionCodeFilter extends ModelFilter
     * @var array
     */
     public $relations = [];
+
+    protected $booleanFields = ['superadmin'];
+
+    protected $likeFields = ['name', 'email', 'phone', 'role', 'username'];
+
+    protected $numericFields = ['id'];
+
+    protected $dateFields = ['created_at', 'updated_at'];
 }

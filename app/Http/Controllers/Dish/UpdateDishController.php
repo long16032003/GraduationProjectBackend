@@ -12,20 +12,64 @@ class UpdateDishController extends Controller
 {
     public function update(Request $request, $id): JsonResponse
     {
+        $validator = Validator::make($request->all(), [
+            'name' => 'sometimes|string|max:255',
+            'description' => 'sometimes|string',
+            'image_id' => 'sometimes|integer|exists:media,id',
+            'price' => 'sometimes|integer|min:0',
+            'category_id' => 'sometimes|integer|exists:dish_categories,id',
+            'is_active' => 'sometimes|boolean',
+            'is_featured' => 'sometimes|boolean',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
         try {
             $dish = Dish::findOrFail($id);
-            $dish->update([
-                'name' => $request->name,
-                'description' => $request->description,
-                'image_id' => $request->image_id,
-                'price' => $request->price,
-                'category_id' => $request->category_id,
-            ]);
+
+            // Chỉ update những trường có trong request
+            $updateData = [];
+
+            if ($request->has('name')) {
+                $updateData['name'] = $request->name;
+            }
+
+            if ($request->has('description')) {
+                $updateData['description'] = $request->description;
+            }
+
+            if ($request->has('image_id')) {
+                $updateData['image_id'] = $request->image_id;
+            }
+
+            if ($request->has('price')) {
+                $updateData['price'] = $request->price;
+            }
+
+            if ($request->has('category_id')) {
+                $updateData['category_id'] = $request->category_id;
+            }
+
+            if ($request->has('is_active')) {
+                $updateData['is_active'] = $request->is_active;
+            }
+
+            if ($request->has('is_featured')) {
+                $updateData['is_featured'] = $request->is_featured;
+            }
+
+            $dish->update($updateData);
 
             return new JsonResponse([
                 'success' => true,
                 'message' => 'Món ăn được cập nhật thành công',
-                'data' => $dish
+                'data' => $dish->fresh()
             ], 200);
 
         } catch (\Exception $e) {
