@@ -5,6 +5,7 @@ use App\Http\Controllers\CsrfCookieController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\Settings\SiteSettingController;
+use App\Http\Controllers\User\UserRoleController;
 
 use App\Http\Controllers\Bill\IndexBillController;
 use App\Http\Controllers\Bill\StoreBillController;
@@ -66,10 +67,6 @@ Route::group(['prefix' => 'sanctum'], static function () {
 Route::get('permissions', [PermissionController::class, 'show'])
     ->name('permissions');
 
-Route::group(['prefix' => 'role', 'name' => 'role'], static function () {
-    Route::post('/', [RoleController::class, 'store'])->name('store');
-});
-
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';
 require __DIR__.'/customer.php';
@@ -89,11 +86,11 @@ Route::get('/dish-categories', [IndexDishCategoryController::class, 'index'])->n
 
 // Public bill routes
 Route::prefix('bills')->group(function () {
-    Route::post('', [StoreBillController::class, 'store'])->name('bills.store');
-    Route::get('', [IndexBillController::class, 'index'])->name('bills.index');
+    Route::post('', [StoreBillController::class, 'store'])->middleware('permission:bill:create')->name('bills.store');
+    Route::get('', [IndexBillController::class, 'index'])->middleware('permission:bill:browse')->name('bills.index');
     Route::get('/{id}', [ShowBillController::class, 'show'])->name('bills.show');
     Route::put('/{id}', [UpdateBillController::class, 'update'])->name('bills.update');
-    Route::post('/{id}/pay', [UpdateBillController::class, 'pay'])->name('bills.pay');
+    Route::post('/{id}/pay', [UpdateBillController::class, 'pay'])->middleware('permission:bill:update')->name('bills.pay');
     Route::delete('/{id}', [DeleteBillController::class, 'delete'])->name('bills.delete');
 });
 
@@ -110,15 +107,12 @@ Route::get('/media/list', [MediaController::class, 'list'])->name('media.list');
 // Statistics routes - Require authentication and proper role
 Route::middleware(['auth'])->group(function () {
     // Dashboard statistics - quick overview
-    Route::get('/statistics/dashboard', [StatisticsController::class, 'getDashboard'])->name('statistics.dashboard');
+    Route::get('/statistics/dashboard', [StatisticsController::class, 'getDashboard'])->middleware('permission:statistics:browse')->name('statistics.dashboard');
     // Detailed revenue statistics with filters
-    Route::get('/statistics/revenue', [StatisticsController::class, 'getRevenue'])->name('statistics.revenue');
+    Route::get('/statistics/revenue', [StatisticsController::class, 'getRevenue'])->middleware('permission:statistics:browse')->name('statistics.revenue');
 });
 
 Route::middleware(['auth:web,customer'])->group(function () {
-    Route::get('@me', static function (Request $request) {
-        return response()->json($request->user());
-    })->name('@me');
     Route::get('/tables', [IndexTableController::class, 'index'])->name('tables.index');
 
     Route::get('/available-tables', [AvailableTablesController::class, 'getAvailableTables']);
@@ -127,10 +121,10 @@ Route::middleware(['auth:web,customer'])->group(function () {
     Route::get('/promotion_codes', [IndexPromotionCodeController::class, 'index'])->name('promotion_codes.index');
 
     Route::prefix('reservations')->group(function () {
-        Route::get('/', [IndexReservationController::class, 'index'])->name('reservations.index');
-        Route::post('/', [StoreReservationController::class, 'store'])->name('reservations.store');
-        Route::put('{id}', [UpdateReservationController::class, 'update'])->name('reservations.update');
-        Route::delete('{id}', [DeleteReservationController::class, 'delete'])->name('reservations.delete');
+        Route::get('/', [IndexReservationController::class, 'index'])->middleware('permission:reservation:browse')->name('reservations.index');
+        Route::post('/', [StoreReservationController::class, 'store'])->middleware('permission:reservation:create')->name('reservations.store');
+        Route::put('{id}', [UpdateReservationController::class, 'update'])->middleware('permission:reservation:update')->name('reservations.update');
+        Route::delete('{id}', [DeleteReservationController::class, 'delete'])->middleware('permission:reservation:delete')->name('reservations.delete');
     });
 });
 
@@ -143,14 +137,25 @@ Route::prefix('vnpay')->group(function () {
     Route::post('/cancel/{payment}', [VNPayController::class, 'cancelPayment'])->name('vnpay.cancel');
 });
 
-// Site Settings routes - Require authentication
+// Site Settings routes - Require authentication and permission
 Route::middleware(['auth:web'])->prefix('site-settings')->group(function () {
-    Route::get('/', [SiteSettingController::class, 'index'])->name('site-settings.index');
-    Route::get('/{key}', [SiteSettingController::class, 'show'])->name('site-settings.show');
-    Route::post('/', [SiteSettingController::class, 'store'])->name('site-settings.store');
-    Route::put('/', [SiteSettingController::class, 'update'])->name('site-settings.update');
+    Route::get('/', [SiteSettingController::class, 'index'])->middleware('permission:site-setting:browse')->name('site-settings.index');
+    Route::get('/{key}', [SiteSettingController::class, 'show'])->middleware('permission:site-setting:read')->name('site-settings.show');
+    Route::post('/', [SiteSettingController::class, 'store'])->middleware('permission:site-setting:create')->name('site-settings.store');
+    Route::put('/', [SiteSettingController::class, 'update'])->middleware('permission:site-setting:update')->name('site-settings.update');
     // Route với pattern số để hỗ trợ refine format
-    Route::put('/{id}', [SiteSettingController::class, 'update'])->where('id', '[0-9]+')->name('site-settings.update-by-id');
-    Route::put('/{key}', [SiteSettingController::class, 'updateSingle'])->name('site-settings.update-single');
-    Route::delete('/{key}', [SiteSettingController::class, 'destroy'])->name('site-settings.destroy');
+    Route::put('/{id}', [SiteSettingController::class, 'update'])->where('id', '[0-9]+')->middleware('permission:site-setting:update')->name('site-settings.update-by-id');
+    Route::put('/{key}', [SiteSettingController::class, 'updateSingle'])->middleware('permission:site-setting:update')->name('site-settings.update-single');
+    Route::delete('/{key}', [SiteSettingController::class, 'destroy'])->middleware('permission:site-setting:delete')->name('site-settings.destroy');
+});
+
+// User Roles Management - Require authentication and permission
+Route::middleware(['auth:web'])->prefix('staffs')->group(function () {
+    Route::prefix('{staff}/roles')->group(function () {
+        Route::get('/', [UserRoleController::class, 'index'])->middleware('permission:user:read')->name('staffs.roles.index');
+        Route::post('/', [UserRoleController::class, 'store'])->middleware('permission:user:update')->name('staffs.roles.store');
+        Route::post('/attach', [UserRoleController::class, 'attach'])->middleware('permission:user:update')->name('staffs.roles.attach');
+        Route::delete('/detach', [UserRoleController::class, 'detach'])->middleware('permission:user:update')->name('users.roles.detach');
+    });
+    Route::post('{user}/check-permission', [UserRoleController::class, 'checkPermission'])->middleware('permission:user:read')->name('users.check-permission');
 });

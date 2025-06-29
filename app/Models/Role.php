@@ -10,15 +10,25 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany;
  */
 class Role extends Model
 {
+    protected $fillable = [
+        'name',
+        'level',
+        'status',
+        'permissions'
+    ];
+
     protected function casts(): array
     {
         return [
-            'permissions' => 'array'
+            'permissions' => 'array',
+            'status' => 'boolean'
         ];
     }
 
     protected $attributes = [
         'permissions' => '[]',
+        'level' => 0,
+        'status' => true,
     ];
 
     /**

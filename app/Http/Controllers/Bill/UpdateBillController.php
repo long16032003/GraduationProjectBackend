@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Bill;
 
 use App\Http\Controllers\Controller;
 use App\Models\Bill;
+use App\Models\Customer;
 use App\Models\PromotionCode;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
@@ -47,6 +48,15 @@ class UpdateBillController extends Controller
                 'payment_method' => $request->payment_method,
                 'notes' => $request->notes,
             ]);
+
+            if($result && $bill->customer_phone) {
+                $customer = Customer::where('phone', $bill->customer_phone)->first();
+                if($customer) {
+                    $customer->update([
+                        'point' => $customer->point + round((int)$request->total_amount / 10000),
+                    ]);
+                }
+            }
 
             $promotion_code = PromotionCode::where('code', $request->coupon_code)->first();
             if ($promotion_code && $result) {

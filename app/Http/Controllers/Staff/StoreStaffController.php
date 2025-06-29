@@ -20,7 +20,6 @@ class StoreStaffController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|lowercase|email|max:255|unique:'.User::class,
             'password' => ['required', Rules\Password::defaults()],
-            'role' => 'required|string|in:service staff,admin,manager,kitchen assistant,chef',
             'phone' => 'string|max:10',
         ]);
 
@@ -29,7 +28,6 @@ class StoreStaffController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role' => $request->role,
             'phone' => $request->phone ?? null,
         ]);
 

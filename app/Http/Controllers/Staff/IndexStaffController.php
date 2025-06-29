@@ -35,6 +35,7 @@ class IndexStaffController extends Controller
                 return $query->orderBy($sortField, $sortOrder);
             })
             ->get();
+            $staff->load('roles');
             return new JsonResponse([
                 'success' => true,
                 'data' => $staff,

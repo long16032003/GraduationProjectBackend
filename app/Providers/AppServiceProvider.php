@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Exceptions\ThrottleRequestsException;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Middleware\ThrottleRequestsWithRedis;
 use Illuminate\Support\Facades\DB;
@@ -37,20 +38,26 @@ class AppServiceProvider extends ServiceProvider
         // dont hash key before save to redis
         ThrottleRequestsWithRedis::shouldHashKeys(false);
 
-        // https://laravel.com/docs/12.x/routing#defining-rate-limiters
+        $this->defineRateLimiters();
+
+    }
+
+    // https://laravel.com/docs/12.x/routing#defining-rate-limiters
+    private function defineRateLimiters(): void
+    {
         RateLimiter::for('web', static function (Request $request) {
-            $route = Route::current();
-            $key = $request->user()?->id ?: $request->ip();
+            $key = get_limiter_key($request);
 
-            if (is_null($route)) {
-                return Limit::perHour(1000)->by('hour:' . $key);
+            if (is_null($request->route())) {
+                return Limit::perMinute(30)->by('minute:' . $key);
             }
-
-            $key = $route->getName() . ':' . $request->method() . ':' . $key;
 
             return [
                 Limit::perMinute(30)->by('minute:' . $key),
-                Limit::perHour(1000)->by('hour:' . $key),
+                Limit::perHour(500)->by('hour:' . $key)
+                    ->response(function (Request $request, array $headers) {
+                        throw new ThrottleRequestsException('Too Many Attempts.', null, $headers);
+                    }),
             ];
         });
 
