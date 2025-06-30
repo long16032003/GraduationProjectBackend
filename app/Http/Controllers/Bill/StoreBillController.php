@@ -46,7 +46,11 @@ class StoreBillController extends Controller
         try {
             $bill = Bill::create($dataCreate);
 
-            return new JsonResponse($bill, JsonResponse::HTTP_CREATED);
+            return new JsonResponse([
+                'success' => true,
+                'message' => 'Tạo hóa đơn thành công',
+                'data' => $bill
+            ], JsonResponse::HTTP_CREATED);
 
         } catch (\Exception $e) {
             return response()->json([

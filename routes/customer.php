@@ -30,8 +30,6 @@ Route::middleware('auth:customer')->group(function () {
 
     Route::post('/promotion_codes', [StorePromotionCodeController::class, 'store'])->name('promotion_codes.store');
 
-    Route::get('/bills', [IndexBillController::class, 'index'])->name('bills.index');
-
     Route::get('/customers/{id}', [CustomerController::class, 'show'])->name('customers.show');
     Route::put('/customers/{id}', [CustomerController::class, 'update'])->name('customers.update');
 

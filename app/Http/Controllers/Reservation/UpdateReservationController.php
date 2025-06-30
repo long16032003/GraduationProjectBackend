@@ -27,12 +27,13 @@ class UpdateReservationController extends Controller
         }
 
         $validated = $request->validate([
-            'table_id' => 'sometimes|exists:tables,id',
-            'phone' => 'sometimes|string',
-            'name' => 'sometimes|string',
-            'reservation_date' => 'sometimes|date_format:Y-m-d H:i:s|after_or_equal:now',
-            'status' => ['sometimes', Rule::in(['pending', 'confirmed', 'cancelled'])],
-            'note' => 'nullable|string',
+            'table_id' => 'exists:tables,id',
+            'phone' => 'string',
+            'name' => 'string',
+            'reservation_date' => 'integer',
+            'status' => ['required', Rule::in(['pending', 'confirmed', 'cancelled'])],
+            'notes' => 'nullable|string',
+            'number_of_guests' => 'integer',
         ]);
 
         // Convert reservation_date to timestamp if provided

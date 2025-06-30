@@ -47,7 +47,8 @@ class StatisticsRequest extends FormRequest
                 Rule::in([
                     Bill::PAYMENT_METHOD_CASH,
                     Bill::PAYMENT_METHOD_CARD,
-                    Bill::PAYMENT_METHOD_BOTH,
+                    Bill::PAYMENT_METHOD_MOMO,
+                    Bill::PAYMENT_METHOD_VNPAY,
                     'all'
                 ])
             ],

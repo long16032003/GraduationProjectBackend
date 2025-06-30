@@ -49,6 +49,7 @@ use App\Http\Controllers\Upload\UploadImageController;
 use App\Http\Controllers\Media\MediaController;
 use App\Http\Controllers\Order\IndexOrderController;
 use App\Http\Controllers\Order\StoreOrderController;
+use App\Http\Controllers\Order\UpdateOrderController;
 use App\Http\Controllers\PromotionCode\IndexPromotionCodeController;
 use App\Http\Controllers\Statistics\StatisticsController;
 use App\Http\Controllers\Payment\VNPayController;
@@ -84,20 +85,7 @@ Route::get('/promotions', [IndexPromotionController::class, 'index'])->name('pro
 // Kiểm tra bàn trống
 Route::get('/dish-categories', [IndexDishCategoryController::class, 'index'])->name('dish-categories.index');
 
-// Public bill routes
-Route::prefix('bills')->group(function () {
-    Route::post('', [StoreBillController::class, 'store'])->middleware('permission:bill:create')->name('bills.store');
-    Route::get('', [IndexBillController::class, 'index'])->middleware('permission:bill:browse')->name('bills.index');
-    Route::get('/{id}', [ShowBillController::class, 'show'])->name('bills.show');
-    Route::put('/{id}', [UpdateBillController::class, 'update'])->name('bills.update');
-    Route::post('/{id}/pay', [UpdateBillController::class, 'pay'])->middleware('permission:bill:update')->name('bills.pay');
-    Route::delete('/{id}', [DeleteBillController::class, 'delete'])->name('bills.delete');
-});
-
-Route::post('orders', [StoreOrderController::class, 'store'])->name('orders.store');
-Route::get('orders', [IndexOrderController::class, 'index'])->name('orders.index');
-// Route::put('orders/{id}', [UpdateOrderController::class, 'update'])->name('orders.update');
-// Route::delete('orders/{id}', [DeleteOrderController::class, 'delete'])->name('orders.delete');
+// Route::delete('orders/{id}', [DeleteOrderController::class, 'delete'])->middleware('permission:order:delete')->name('orders.delete');
 
 // Media routes
 Route::post('/media/upload', [MediaController::class, 'upload'])->name('media.upload');

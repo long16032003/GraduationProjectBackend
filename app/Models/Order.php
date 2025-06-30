@@ -22,6 +22,8 @@ class Order extends Model
     const STATUS_NOT_COMPLETED = 'not completed';
     /** Trạng thái khi đã hoàn thành (NV phục vụ xác nhận hoàn thành đơn)*/
     const STATUS_DONE = 'done';
+    /** Trạng thái khi đơn bị hủy */
+    const STATUS_CANCELLED = 'cancelled';
 
     const STATUS_LIST = [
         self::STATUS_INIT,
@@ -29,6 +31,7 @@ class Order extends Model
         self::STATUS_FINISHED_PROCESS,
         self::STATUS_NOT_COMPLETED,
         self::STATUS_DONE,
+        self::STATUS_CANCELLED,
     ];
 
     protected $fillable = [
@@ -38,6 +41,15 @@ class Order extends Model
         'order_time',
         'note',
         'status',
+        'priority',
+        'cancelled_reason',
+        'cancelled_by',
+        'cancelled_at',
+    ];
+
+    protected $casts = [
+        'order_time' => 'datetime',
+        'cancelled_at' => 'datetime',
     ];
 
     public function table(){
@@ -50,6 +62,10 @@ class Order extends Model
 
     public function creator(){
         return $this->belongsTo(User::class, 'creator_id', 'id');
+    }
+
+    public function cancelledBy(){
+        return $this->belongsTo(User::class, 'cancelled_by', 'id');
     }
 
     public function order_dishes(){
