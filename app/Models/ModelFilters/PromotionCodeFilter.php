@@ -21,4 +21,32 @@ class PromotionCodeFilter extends ModelFilter
     * @var array
     */
     public $relations = [];
+
+    /**
+     * Filter by promotion_id
+     */
+    public function promotionId($value)
+    {
+        return $this->where('promotion_id', $value);
+    }
+
+    /**
+     * Filter by code
+     */
+    public function code($value)
+    {
+        return $this->where('code', 'LIKE', "%{$value}%");
+    }
+
+    /**
+     * Filter by used status
+     */
+    public function used($value)
+    {
+        if ($value == '1' || $value === true) {
+            return $this->whereNotNull('used_at');
+        } else {
+            return $this->whereNull('used_at');
+        }
+    }
 }

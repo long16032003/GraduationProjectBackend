@@ -130,6 +130,7 @@ trait HasAdvancedFilters
      */
     private function applyNumericFilter($field, $value, $operator)
     {
+        dd($field, $value, $operator);
         return match($operator) {
             'eq' => $this->where($field, $value),
             'ne' => $this->where($field, '!=', $value),
