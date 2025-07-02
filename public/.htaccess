@@ -52,7 +52,7 @@
     # Browser Sniffing Protection
     Header always set X-Content-Type-Options "nosniff"
     # XSS Protection
-   Header always set Content-Security-Policy "object-src 'none';base-uri 'none';default-src 'self';style-src 'self' 'unsafe-inline';"
+#    Header always set Content-Security-Policy "object-src 'none';base-uri 'none';default-src 'self';style-src 'self' 'unsafe-inline';"
 
      # Header for service worker file
     <Files "sw.js">
