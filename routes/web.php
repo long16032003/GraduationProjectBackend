@@ -53,6 +53,7 @@ use App\Http\Controllers\Order\UpdateOrderController;
 use App\Http\Controllers\PromotionCode\IndexPromotionCodeController;
 use App\Http\Controllers\Statistics\StatisticsController;
 use App\Http\Controllers\Payment\VNPayController;
+use App\Http\Controllers\Payment\SePayController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -110,7 +111,7 @@ Route::middleware(['auth:web,customer'])->group(function () {
 
     Route::prefix('reservations')->group(function () {
         Route::get('/', [IndexReservationController::class, 'index'])->middleware('permission:reservation:browse')->name('reservations.index');
-        Route::post('/', [StoreReservationController::class, 'store'])->middleware('permission:reservation:create')->name('reservations.store');
+        Route::post('/', [StoreReservationController::class, 'store'])->name('reservations.store');
         Route::put('{id}', [UpdateReservationController::class, 'update'])->middleware('permission:reservation:update')->name('reservations.update');
         Route::delete('{id}', [DeleteReservationController::class, 'delete'])->middleware('permission:reservation:delete')->name('reservations.delete');
     });
@@ -135,6 +136,10 @@ Route::middleware(['auth:web'])->prefix('site-settings')->group(function () {
     Route::put('/{id}', [SiteSettingController::class, 'update'])->where('id', '[0-9]+')->middleware('permission:site-setting:update')->name('site-settings.update-by-id');
     Route::put('/{key}', [SiteSettingController::class, 'updateSingle'])->middleware('permission:site-setting:update')->name('site-settings.update-single');
     Route::delete('/{key}', [SiteSettingController::class, 'destroy'])->middleware('permission:site-setting:delete')->name('site-settings.destroy');
+});
+
+Route::prefix('hooks')->group(function () {
+    Route::post('/sepay-payment', [SePayController::class, 'webhook'])->name('sepay.webhook');
 });
 
 // User Roles Management - Require authentication and permission

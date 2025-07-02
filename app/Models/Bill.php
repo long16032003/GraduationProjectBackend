@@ -28,9 +28,8 @@ class Bill extends Model
     const STATUS_CANCELLED = 'cancelled';
 
     const PAYMENT_METHOD_CASH = 'cash';
-    const PAYMENT_METHOD_CARD = 'card';
-    const PAYMENT_METHOD_MOMO = 'momo';
     const PAYMENT_METHOD_VNPAY = 'vnpay';
+    const PAYMENT_METHOD_BANK_TRANSFER = 'bank_transfer';
 
     protected $fillable = [
         'creator_id',

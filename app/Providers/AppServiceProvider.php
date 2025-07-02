@@ -33,6 +33,7 @@ class AppServiceProvider extends ServiceProvider
 
         Relation::enforceMorphMap([
             'user' => \App\Models\User::class,
+            // 'customer' => \App\Models\Customer::class,
         ]);
 
         // dont hash key before save to redis
