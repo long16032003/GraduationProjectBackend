@@ -39,24 +39,17 @@ class SePayController extends Controller
                 'data' => $request->all()
             ]);
 
-            // Get content and extract bill number after #
+            // Get content and extract bill number from "Thanh toan hoa don {number}"
             $content = $request->input('content', '');
-            if (!str_contains($content, '#')) {
-                Log::warning('SePay webhook: No # found in content', [
+
+            // Extract bill number from content using regex pattern
+            if (preg_match('/Thanh toan hoa don (\d+)/', $content, $matches)) {
+                $billNumber = $matches[1];
+            } else {
+                Log::warning('SePay webhook: No bill number found in content', [
                     'content' => $content
                 ]);
                 return response()->json(['message' => 'Invalid content format'], 400);
-            }
-
-            // Extract bill number after #
-            $parts = explode('#', $content);
-            $billNumber = trim(end($parts));
-
-            if (empty($billNumber)) {
-                Log::warning('SePay webhook: Empty bill number', [
-                    'content' => $content
-                ]);
-                return response()->json(['message' => 'Invalid bill number'], 400);
             }
 
             // Find bill by ID
@@ -82,6 +75,7 @@ class SePayController extends Controller
                     'status' => Bill::STATUS_PAID,
                     'payment_method' => Bill::PAYMENT_METHOD_BANK_TRANSFER
                 ]);
+
             });
 
             Log::info('SePay webhook: Payment processed successfully', [
