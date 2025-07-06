@@ -13,7 +13,7 @@ class IndexPromotionController extends Controller
     use Filterable;
     public function index(Request $request): JsonResponse
     {
-        $promotions = Promotion::filter($request->all())->get();
+        $promotions = Promotion::filter($request->all())->with('image', 'creator', 'promotion_codes.customer')->get();
         return new JsonResponse([
             'success' => true,
             'message' => 'Lấy danh sách khuyến mãi thành công',

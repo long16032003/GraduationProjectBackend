@@ -12,6 +12,7 @@ class Reservation extends Model
     use Filterable;
     protected $table = 'reservations';
     public $timestamps = true;
+
     //
     protected $fillable = [
         'table_id',

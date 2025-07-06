@@ -18,9 +18,14 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->date('start_date');
             $table->date('end_date');
-            $table->integer('discount_percentage');
-            $table->integer('required_points');
-            $table->integer('limit_per_user_count')->default(0);
+            $table->decimal('discount_percentage', 10, 2)->nullable();
+            $table->decimal('discount_amount', 10, 2)->nullable();
+            $table->enum('discount_type', ['percentage', 'fixed_amount']);
+            $table->decimal('min_order_amount', 10, 2)->nullable();
+            $table->decimal('max_discount_amount', 10, 2)->nullable();
+            $table->integer('required_points')->nullable();
+            $table->foreignId('image_id')->constrained('media')->nullable();
+            $table->integer('limit')->default(0);
             $table->timestamps();
         });
     }

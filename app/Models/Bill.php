@@ -28,13 +28,14 @@ class Bill extends Model
     const STATUS_CANCELLED = 'cancelled';
 
     const PAYMENT_METHOD_CASH = 'cash';
-    const PAYMENT_METHOD_CARD = 'card';
-    const PAYMENT_METHOD_BOTH = 'both';
+    const PAYMENT_METHOD_VNPAY = 'vnpay';
+    const PAYMENT_METHOD_BANK_TRANSFER = 'bank_transfer';
 
     protected $fillable = [
         'creator_id',
         'customer_id',
         'customer_phone',
+        'customer_name',
         'table_id',
         'payment_method',
         'total_amount',
@@ -53,9 +54,32 @@ class Bill extends Model
         return $this->belongsTo(Customer::class, 'customer_id', 'id');
     }
 
+        /**
+     * Get customer by phone (for bills without customer_id)
+     */
+    public function customerByPhone()
+    {
+        return $this->belongsTo(Customer::class, 'customer_phone', 'phone');
+    }
+
     public function table()
     {
         return $this->belongsTo(Table::class, 'table_id', 'id');
+    }
+
+    public function orders()
+    {
+        return $this->hasMany(Order::class, 'bill_id', 'id');
+    }
+
+    public function payments()
+    {
+        return $this->hasMany(Payment::class, 'bill_id', 'id');
+    }
+
+    public function latestPayment()
+    {
+        return $this->hasOne(Payment::class, 'bill_id', 'id')->latest();
     }
 
     public function modelFilter()

@@ -11,15 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('customers', function (Blueprint $table) {
+        Schema::create('export_ingredients', function (Blueprint $table) {
             $table->id();
-            $table->uuid()->unique();
-            $table->string('name');
-            $table->string('phone')->unique();
-            $table->string('email')->unique();
-            $table->string('password');
-            $table->string('point')->default(0);
-            $table->rememberToken();
+            $table->foreignId('creator_id')->constrained('users');
+            $table->string('note')->nullable();
             $table->timestamps();
         });
     }
@@ -29,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('customers');
+        Schema::dropIfExists('export_ingredients');
     }
 };

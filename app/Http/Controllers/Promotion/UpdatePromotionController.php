@@ -21,8 +21,13 @@ class UpdatePromotionController extends Controller
                 'start_date' => $request->start_date,
                 'end_date' => $request->end_date,
                 'discount_percentage' => $request->discount_percentage,
+                'discount_amount' => $request->discount_amount,
+                'discount_type' => $request->discount_type,
+                'min_order_amount' => $request->min_order_amount,
+                'max_discount_amount' => $request->max_discount_amount,
                 'required_points' => $request->required_points,
-                'limit_per_user_count' => $request->limit_per_user_count,
+                'image_id' => $request->image_id,
+                'limit' => $request->limit,
             ]);
 
             return new JsonResponse([

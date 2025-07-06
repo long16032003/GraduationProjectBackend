@@ -28,7 +28,7 @@ class PermissionServiceProvider extends ServiceProvider
         // Register the permission at gate
         $this->callAfterResolving(Gate::class, function (Gate $gate, Application $app) {
             $gate->before(function (Authorizable $user, string $ability) {
-                if ($user->isSuperAdmin()) {
+                if (method_exists($user, 'isSuperAdmin') && $user->isSuperAdmin()) {
                     return true;
                 }
                 if (method_exists($user, 'hasPermission')) {

@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Bill;
 
 use App\Http\Controllers\Controller;
 use App\Models\Bill;
+use App\Models\Customer;
+use App\Models\PromotionCode;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Validator;
@@ -22,6 +24,50 @@ class UpdateBillController extends Controller
             return new JsonResponse([
                 'success' => true,
                 'message' => 'Hóa đơn được cập nhật thành công',
+                'data' => $bill
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Cập nhật hóa đơn thất bại',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function pay(Request $request, $id): JsonResponse
+    {
+        try {
+            $auth = Auth::guard('web')->user();
+            $bill = Bill::findOrFail($id);
+            $result = $bill->update([
+                'status' => Bill::STATUS_PAID,
+                'total_amount' => $request->total_amount,
+                'discount_amount' => $request->discount_amount,
+                'payment_method' => $request->payment_method,
+                'notes' => $request->notes,
+            ]);
+
+            if($result && $bill->customer_phone) {
+                $customer = Customer::where('phone', $bill->customer_phone)->first();
+                if($customer) {
+                    $customer->update([
+                        'point' => $customer->point + round((int)$request->total_amount / 10000),
+                    ]);
+                }
+            }
+
+            $promotion_code = PromotionCode::where('code', $request->coupon_code)->first();
+            if ($promotion_code && $result) {
+                $promotion_code->update([
+                    'used_at' => now(),
+                ]);
+            }
+
+            return new JsonResponse([
+                'success' => true,
+                'message' => 'Thanh toán thành công',
                 'data' => $bill
             ], 200);
 

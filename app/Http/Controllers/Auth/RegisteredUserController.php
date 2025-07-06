@@ -24,21 +24,22 @@ class RegisteredUserController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|string|lowercase|email|max:255|unique:'.User::class,
+            'phone' => 'required|string|max:255|unique:'.Customer::class,
+            'email' => 'required|string|lowercase|email|max:255|unique:'.Customer::class,
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
-        /** TODO: Cần sửa lại logic, chuyển thành đăng kí cho khách hàng */
-        $user = User::create([
+        $customer = Customer::create([
             'name' => $request->name,
+            'phone' => $request->phone,
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'point' => 0,
         ]);
 
-        event(new Registered($user));
+        event(new Registered($customer));
 
-//        Auth::login($user);
+        Auth::guard('customer')->login($customer);
 
         if ($request->wantsJson()) {
             return response()->json([], 204);

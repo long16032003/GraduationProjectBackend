@@ -20,6 +20,7 @@ class Dish extends Model
         'category_id',
         'creator_id',
         'is_active',
+        'is_featured',
     ];
 
     public function dishCategories()

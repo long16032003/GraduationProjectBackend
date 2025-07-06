@@ -2,11 +2,14 @@
 
 namespace App\Models\ModelFilters;
 
+use App\Models\ModelFilters\Traits\HasAdvancedFilters;
 use Carbon\Carbon;
 use EloquentFilter\ModelFilter;
 
 class ReservationFilter extends ModelFilter
 {
+    use HasAdvancedFilters;
+
     /**
     * Related Models that have ModelFilters as well as the method on the ModelFilter
     * As [relationMethod => [input_key1, input_key2]].
@@ -15,40 +18,17 @@ class ReservationFilter extends ModelFilter
     */
     public $relations = [];
 
-    public function status($status)
-    {
-        return $this->where('status', $status);
-    }
+    protected $likeFields = ['name', 'phone', 'notes', 'status'];
 
-    public function tableId($id)
-    {
-        return $this->where('table_id', $id);
-    }
+    protected $numericFields = ['id', 'table_id', 'customer_id', 'number_of_guests'];
 
-    public function customerId($id)
-    {
-        return $this->where('customer_id', $id);
-    }
+    protected $dateFields = ['reservation_date'];
 
-    public function phone($phone)
-    {
-        return $this->where('phone', 'LIKE', "%$phone%");
-    }
-
-    public function name($name)
-    {
-        return $this->where('name', 'LIKE', "%$name%");
-    }
-
-    public function dateFrom($date)
-    {
-        return $this->where('reservation_date', '>=', Carbon::parse($date));
-    }
-
-    public function dateTo($date)
-    {
-        return $this->where('reservation_date', '<=', Carbon::parse($date)->endOfDay());
-    }
+    protected $sortable = [
+        'reservation_date',
+        'created_at',
+        'updated_at'
+    ];
 
     public function date($date)
     {

@@ -47,9 +47,25 @@ class GeneratePermissionCommand extends Command
     private function registerPermissions(): void
     {
         Permission::group(['default' => 'Default'], static function() {
-            Permission::resource(['user' => 'User']);
-            Permission::resource(['role' => 'Role']);
-            Permission::resource(['media' => 'Media'], [], ['create' => 'Upload']);
+            Permission::resource(['user' => 'Quản lý nhân viên']);
+            Permission::resource(['role' => 'Phân quyền']);
+            Permission::resource(['customer' => 'Quản lý khách hàng']);
+            Permission::resource(['post' => 'Quản lý bài viết']);
+            Permission::resource(['order' => 'Quản lý đơn gọi món']);
+            Permission::resource(['ingredient' => 'Quản lý nguyên liệu']);
+            Permission::resource(['product' => 'Quản lý sản phẩm']);
+            Permission::resource(['bill' => 'Quản lý hóa đơn']);
+            Permission::resource(['site-setting' => 'Quản lý cấu hình']);
+            Permission::resource(['enter-ingredient' => 'Quản lý nhập nguyên liệu']);
+            Permission::resource(['export-ingredient' => 'Quản lý xuất nguyên liệu']);
+            Permission::resource(['dish' => 'Quản lý món ăn']);
+            Permission::resource(['dish-category' => 'Quản lý danh mục món ăn']);
+            Permission::resource(['reservation' => 'Quản lý đặt bàn']);
+            Permission::resource(['table' => 'Quản lý bàn']);
+            Permission::resource(['promotion' => 'Quản lý khuyến mãi']);
+            Permission::resource(['staff' => 'Quản lý nhân viên']);
+            Permission::resource(['media' => 'Quản lý media'], [], ['create' => 'Tải lên']);
+            Permission::resource(['statistics' => 'Thống kê']);
         });
 
 //        Permission::group(['web' => 'Web'], static function () {

@@ -54,6 +54,11 @@ class Table extends Model
         return $this->belongsTo(User::class, 'creator_id', 'id');
     }
 
+    public function bills()
+    {
+        return $this->hasMany(Bill::class, 'table_id', 'id');
+    }
+
     public function modelFilter()
     {
         return $this->provideFilter(TableFilter::class);

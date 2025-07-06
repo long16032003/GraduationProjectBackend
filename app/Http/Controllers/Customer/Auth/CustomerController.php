@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Customer\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\Customer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -20,25 +21,43 @@ class CustomerController extends Controller
         ]);
     }
 
-    /**
-     * Update the authenticated customer's profile.
-     */
-    // public function update(Request $request): JsonResponse
-    // {
-    //     $customer = Auth::guard('customer')->user();
+    public function index(Request $request): JsonResponse
+    {
+        $customer = Customer::filter($request->all())
+            ->with(['promotionCodes', 'bills', 'reservations'])->get();
 
-    //     $validated = $request->validate([
-    //         'name' => 'sometimes|string|max:255',
-    //         'phone' => 'sometimes|string|max:20|unique:customers,phone,' . $customer->id,
-    //         'email' => 'sometimes|string|email|max:255|unique:customers,email,' . $customer->id,
-    //     ]);
+        return response()->json([
+            'success' => true,
+            'data' => $customer
+        ]);
+    }
 
-    //     $customer->update($validated);
+    public function show(Request $request, $id): JsonResponse
+    {
+        $customer = Customer::find($id);
+        return response()->json([
+            'success' => true,
+            'data' => $customer
+        ]);
+    }
 
-    //     return response()->json([
-    //         'success' => true,
-    //         'message' => 'Cập nhật thông tin thành công',
-    //         'data' => $customer->fresh()
-    //     ]);
-    // }
+    public function update(Request $request, $id): JsonResponse
+    {
+        $customer = Customer::find($id);
+        $customer->update($request->all());
+        return new JsonResponse([
+            'success' => true,
+            'data' => $customer
+        ], JsonResponse::HTTP_OK);
+    }
+
+    public function destroy(Request $request, $id): JsonResponse
+    {
+        $customer = Customer::find($id);
+        $customer->delete();
+        return response()->json([
+            'success' => true,
+            'data' => $customer
+        ]);
+    }
 }
