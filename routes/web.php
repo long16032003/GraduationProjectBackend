@@ -50,6 +50,7 @@ use App\Http\Controllers\Media\MediaController;
 use App\Http\Controllers\Order\IndexOrderController;
 use App\Http\Controllers\Order\StoreOrderController;
 use App\Http\Controllers\Order\UpdateOrderController;
+use App\Http\Controllers\Payment\MomoController;
 use App\Http\Controllers\PromotionCode\IndexPromotionCodeController;
 use App\Http\Controllers\Statistics\StatisticsController;
 use App\Http\Controllers\Payment\VNPayController;
@@ -140,6 +141,13 @@ Route::middleware(['auth:web'])->prefix('site-settings')->group(function () {
 
 Route::prefix('hooks')->group(function () {
     Route::post('/sepay-payment', [SePayController::class, 'webhook'])->name('sepay.webhook');
+});
+
+Route::prefix('momo')->group(function () {
+    Route::post('/create-payment', [MomoController::class, 'createPayment'])->name('momo.create');
+    Route::post('/notify', [MomoController::class, 'handleNotify'])->name('momo.notify');
+    Route::get('/return', [MomoController::class, 'handleReturn'])->name('momo.return');
+    Route::post('/query-status', [MomoController::class, 'queryPaymentStatus'])->name('momo.query');
 });
 
 // User Roles Management - Require authentication and permission

@@ -73,7 +73,8 @@ class SePayController extends Controller
                 // Update bill status to paid
                 $bill->update([
                     'status' => Bill::STATUS_PAID,
-                    'payment_method' => Bill::PAYMENT_METHOD_BANK_TRANSFER
+                    'payment_method' => Bill::PAYMENT_METHOD_BANK_TRANSFER,
+                    'total_amount' => $request->input('transferAmount', 0),
                 ]);
 
             });
