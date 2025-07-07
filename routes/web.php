@@ -110,8 +110,11 @@ Route::middleware(['auth:web,customer'])->group(function () {
 
     Route::get('/promotion_codes', [IndexPromotionCodeController::class, 'index'])->name('promotion_codes.index');
 
+    Route::get('/bills', [IndexBillController::class, 'index'])->name('bills.index');
+    Route::get('orders', [IndexOrderController::class, 'index'])->name('orders.index');
+
     Route::prefix('reservations')->group(function () {
-        Route::get('/', [IndexReservationController::class, 'index'])->middleware('permission:reservation:browse')->name('reservations.index');
+        Route::get('/', [IndexReservationController::class, 'index'])->name('reservations.index');
         Route::post('/', [StoreReservationController::class, 'store'])->name('reservations.store');
         Route::put('{id}', [UpdateReservationController::class, 'update'])->middleware('permission:reservation:update')->name('reservations.update');
         Route::delete('{id}', [DeleteReservationController::class, 'delete'])->middleware('permission:reservation:delete')->name('reservations.delete');
@@ -127,10 +130,11 @@ Route::prefix('vnpay')->group(function () {
     Route::post('/cancel/{payment}', [VNPayController::class, 'cancelPayment'])->name('vnpay.cancel');
 });
 
+Route::get('/site-settings', [SiteSettingController::class, 'index'])->name('site-settings.index');
+Route::get('/site-settings/{key}', [SiteSettingController::class, 'show'])->name('site-settings.show');
+
 // Site Settings routes - Require authentication and permission
 Route::middleware(['auth:web'])->prefix('site-settings')->group(function () {
-    Route::get('/', [SiteSettingController::class, 'index'])->middleware('permission:site-setting:browse')->name('site-settings.index');
-    Route::get('/{key}', [SiteSettingController::class, 'show'])->middleware('permission:site-setting:read')->name('site-settings.show');
     Route::post('/', [SiteSettingController::class, 'store'])->middleware('permission:site-setting:create')->name('site-settings.store');
     Route::put('/', [SiteSettingController::class, 'update'])->middleware('permission:site-setting:update')->name('site-settings.update');
     // Route với pattern số để hỗ trợ refine format

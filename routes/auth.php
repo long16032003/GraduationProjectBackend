@@ -124,7 +124,7 @@ Route::middleware('auth:web')->group(function () {
     // Public bill routes
     Route::prefix('bills')->group(function () {
         Route::post('', [StoreBillController::class, 'store'])->middleware('permission:bill:create')->name('bills.store');
-        Route::get('', [IndexBillController::class, 'index'])->middleware('permission:bill:browse')->name('bills.index');
+        // Route::get('', [IndexBillController::class, 'index'])->middleware('permission:bill:browse')->name('bills.index');
         Route::get('/{id}', [ShowBillController::class, 'show'])->name('bills.show');
         Route::put('/{id}', [UpdateBillController::class, 'update'])->name('bills.update');
         Route::post('/{id}/pay', [UpdateBillController::class, 'pay'])->middleware('permission:bill:update')->name('bills.pay');
@@ -197,7 +197,6 @@ Route::middleware('auth:web')->group(function () {
 
 
     Route::post('orders', [StoreOrderController::class, 'store'])->middleware('permission:order:create')->name('orders.store');
-    Route::get('orders', [IndexOrderController::class, 'index'])->middleware('permission:order:browse')->name('orders.index');
     Route::put('orders/{id}', [UpdateOrderController::class, 'update'])->middleware('permission:order:update')->name('orders.update');
 
     // Order Dishes Management - WITH PERMISSIONS
