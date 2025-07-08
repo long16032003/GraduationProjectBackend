@@ -1,0 +1,13 @@
+apps:
+  - name: r0-queue
+    interpreter: php
+    script: artisan
+    exec_mode: fork
+    instances: 1
+    max_memory_restart: 128M
+    args:
+      - queue:work
+      - --queue=default
+      - --tries=3
+      - --sleep=1
+      - --timeout=60
