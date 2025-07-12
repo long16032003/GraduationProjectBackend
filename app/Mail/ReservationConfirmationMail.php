@@ -33,8 +33,8 @@ class ReservationConfirmationMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            from: config('restaurant.contact.email'),
-            subject: 'Xác nhận đặt bàn - ' . config('restaurant.name'),
+            from: site_setting('contact_email'),
+            subject: 'Xác nhận đặt bàn - ' . site_setting('site_name'),
         );
     }
 
@@ -43,13 +43,12 @@ class ReservationConfirmationMail extends Mailable
      */
     public function content(): Content
     {
-        dump($this->reservation, $this->customer);
         return new Content(
             view: 'emails.reservation_confirmation',
             with: [
                 'reservation' => $this->reservation,
                 'customer' => $this->customer,
-                'restaurantName' => config('restaurant.name'),
+                'restaurantName' => site_setting('site_name'),
             ]
         );
     }

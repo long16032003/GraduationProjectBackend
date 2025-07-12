@@ -94,7 +94,6 @@ class StoreReservationController extends Controller
             // có thể thêm logic khác ở đây (ví dụ: lấy email từ form input)
 
             // Chỉ gửi email nếu có địa chỉ email hợp lệ
-            dump($emailAddress);
             if ($emailAddress && filter_var($emailAddress, FILTER_VALIDATE_EMAIL)) {
                 Mail::to($emailAddress)->send(new ReservationConfirmationMail($reservation, $customer));
 

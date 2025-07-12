@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Order;
 
+use App\Events\NewOrderEvent;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\OrderDish;
@@ -48,6 +49,12 @@ class StoreOrderController extends Controller
                         'price_at_order_time' => $order_dish['price_at_order_time'],
                     ]);
                 }
+
+                // // Load relationships for broadcasting
+                // $order->load(['orderDishes.dish', 'table']);
+
+                // // Broadcast new order event
+                // NewOrderEvent::dispatch($order);
             }
             return new JsonResponse($order, JsonResponse::HTTP_CREATED);
 

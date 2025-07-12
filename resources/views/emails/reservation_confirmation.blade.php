@@ -156,7 +156,7 @@
     <div class="container">
         <!-- Header -->
         <div class="header">
-            <div class="logo">{{ config('restaurant.name', $restaurantName) }}</div>
+            <div class="logo">{{ site_setting('site_name') }}</div>
             <h1>🍽️ Xác nhận đặt bàn</h1>
         </div>
 
@@ -240,29 +240,29 @@
             <div class="contact-info">
                 <h4>📞 Cần hỗ trợ?</h4>
                 <p>Nếu bạn cần thay đổi hoặc hủy đặt bàn, vui lòng liên hệ với chúng tôi:</p>
-                <p><strong>Hotline:</strong> {{ config('restaurant.contact.phone') }}</p>
-                <p><strong>Email:</strong> {{ config('restaurant.contact.email') }}</p>
+                <p><strong>Hotline:</strong> {{ site_setting('contact_phone') }}</p>
+                <p><strong>Email:</strong> {{ site_setting('contact_email') }}</p>
             </div>
 
             <center>
-                <a href="{{ config('app.url') }}" class="button">Xem thực đơn</a>
+                <a href="{{ config('app.url') }}/menu" class="button">Xem thực đơn</a>
             </center>
 
             <p style="margin-top: 30px;">
-                Cảm ơn bạn đã tin tưởng và lựa chọn {{ config('restaurant.name', $restaurantName) }}. Chúng tôi cam kết mang đến cho bạn những trải nghiệm ẩm thực tuyệt vời nhất! 🌟
+                Cảm ơn bạn đã tin tưởng và lựa chọn {{ site_setting('site_name') }}. Chúng tôi cam kết mang đến cho bạn những trải nghiệm ẩm thực tuyệt vời nhất! 🌟
             </p>
         </div>
 
         <!-- Footer -->
         <div class="footer">
-            <p><strong>{{ config('restaurant.name', $restaurantName) }}</strong></p>
-            <p>📍 {{ config('restaurant.contact.address') }}</p>
-            <p>📞 {{ config('restaurant.contact.phone') }} | 📧 {{ config('restaurant.contact.email') }}</p>
-            @if(config('restaurant.contact.website'))
-                <p>🌐 <a href="{{ config('restaurant.contact.website') }}" style="color: #fff;">{{ config('restaurant.contact.website') }}</a></p>
+            <p><strong>{{ site_setting('site_name') }}</strong></p>
+            <p>📍 {{ site_setting('address') }}</p>
+            <p>📞 {{ site_setting('contact_phone') }} | 📧 {{ site_setting('contact_email') }}</p>
+            @if(site_setting('website'))
+                <p>🌐 <a href="{{ config('app.url') }}" style="color: #fff;">{{ config('app.url') }}</a></p>
             @endif
             <p style="margin-top: 15px; font-size: 12px; opacity: 0.8;">
-                © {{ date('Y') }} {{ config('restaurant.name', $restaurantName) }}. All rights reserved.
+                © {{ date('Y') }} {{ site_setting('site_name') }}. All rights reserved.
             </p>
         </div>
     </div>

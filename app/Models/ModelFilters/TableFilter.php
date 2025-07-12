@@ -2,12 +2,15 @@
 
 namespace App\Models\ModelFilters;
 
+use App\Models\ModelFilters\Traits\HasAdvancedFilters;
 use Carbon\Carbon;
 use EloquentFilter\ModelFilter;
 use Illuminate\Database\Eloquent\Builder;
 
 class TableFilter extends ModelFilter
 {
+    use HasAdvancedFilters;
+
     /**
     * Related Models that have ModelFilters as well as the method on the ModelFilter
     * As [relationMethod => [input_key1, input_key2]].
@@ -16,57 +19,66 @@ class TableFilter extends ModelFilter
     */
     public $relations = [];
 
+    /**
+     * Danh sách các field hỗ trợ tìm kiếm LIKE
+     */
+    protected $likeFields = ['name', 'area'];
+
+    /**
+     * Danh sách các field số/có thể so sánh
+     */
+    protected $numericFields = ['id', 'capacity', 'creator_id'];
+
+    /**
+     * Danh sách các field ngày tháng
+     */
+    protected $dateFields = ['created_at', 'updated_at'];
+
+    /**
+     * Danh sách các field boolean
+     */
+    protected $booleanFields = [];
+
+    /**
+     * Danh sách các field có thể sắp xếp
+     */
+    protected $sortable = [
+        'id',
+        'name',
+        'capacity',
+        'area',
+        'status',
+        'created_at',
+        'updated_at'
+    ];
+
+    /**
+     * Lọc theo người tạo
+     */
     public function creator($creator_id)
     {
         return $this->where('creator_id', $creator_id);
     }
 
+    /**
+     * Lọc theo ID
+     */
     public function id($id)
     {
         return $this->where('id', $id);
     }
 
     /**
-     * Filter by capacity with various operators
+     * Lọc theo sức chứa với các toán tử khác nhau
      *
-     * @param mixed $capacity Can be a direct value or an array with operators
-     * @param string $operator Default operator if $capacity is not an array
+     * @param mixed $capacity Có thể là giá trị trực tiếp hoặc array với operators
+     * @param string $operator Toán tử mặc định nếu $capacity không phải array
      * @return $this
      */
-    // public function capacity($capacity, $operator = '=')
-    // {
-    //     // If capacity is an array with operators like ['gte' => 13]
-    //     if (is_array($capacity)) {
-    //         foreach ($capacity as $op => $value) {
-    //             switch ($op) {
-    //                 case 'gte':
-    //                     $this->where('capacity', '>=', $value);
-    //                     break;
-    //                 case 'gt':
-    //                     $this->where('capacity', '>', $value);
-    //                     break;
-    //                 case 'lte':
-    //                     $this->where('capacity', '<=', $value);
-    //                     break;
-    //                 case 'lt':
-    //                     $this->where('capacity', '<', $value);
-    //                     break;
-    //                 case 'eq':
-    //                     $this->where('capacity', '=', $value);
-    //                     break;
-    //                 default:
-    //                     $this->where('capacity', '=', $value);
-    //             }
-    //         }
-    //         return $this;
-    //     }
-
-    //     // If capacity is a direct value
-    //     return $this->where('capacity', $operator, $capacity);
-    // }
+    // Commented out legacy capacity method...
 
     /**
-     * Filter by area
+     * Lọc theo khu vực
      */
     public function area($area)
     {
@@ -74,13 +86,16 @@ class TableFilter extends ModelFilter
     }
 
     /**
-     * Filter by status
+     * Lọc theo trạng thái
      */
     public function status($status)
     {
         return $this->where('status', $status);
     }
 
+    /**
+     * Lọc theo sức chứa với operator
+     */
     public function capacity($capacity)
     {
         $operator = $this->input('capacity_operator', 'eq');
@@ -93,6 +108,9 @@ class TableFilter extends ModelFilter
         };
     }
 
+    /**
+     * Lọc bàn có sẵn (available)
+     */
     public function available($active)
     {
         if(!$active) {
@@ -105,7 +123,7 @@ class TableFilter extends ModelFilter
         $reservationStartTime = $reservationDateTime->copy();
         $reservationEndTime = $reservationDateTime->copy()->addHours(2);
 
-        // loc ra ca ban chua co reservation
+        // Lọc ra các bàn chưa có reservation
         return $this->whereDoesntHave('reservation', function (Builder $query) use ($reservationStartTime, $reservationEndTime) {
             $query->where('status', '!=', 'cancelled')
                 ->where('reservation_date', '>=', $reservationStartTime)
@@ -114,6 +132,9 @@ class TableFilter extends ModelFilter
         });
     }
 
+    /**
+     * Kiểm tra bàn có sẵn - phiên bản 2
+     */
     public function available_v2($active)  // check available table
     {
         if(!$active) {
@@ -135,7 +156,7 @@ class TableFilter extends ModelFilter
             })
             // Không có reservation trùng
             ->whereDoesntHave('reservations', function (Builder $query) use ($startTime, $endTime) {
-                $query->where('status', '!=', 'cancelled')
+                $query->where('status', '!=', 'cancelled')  //Đặt bàn không bị hủy
                     ->where('reservation_date', $startTime->format('Y-m-d'))
                     ->where(function($q) use ($startTime, $endTime) {
                         // Kiểm tra overlap: reservation khác có thời gian trùng không

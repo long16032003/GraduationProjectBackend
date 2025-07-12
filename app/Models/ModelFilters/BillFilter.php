@@ -18,42 +18,58 @@ class BillFilter extends ModelFilter
     public $relations = [];
 
     /**
-     * List of fields that support LIKE queries
+     * Danh sách các field hỗ trợ tìm kiếm LIKE
      */
     protected $likeFields = ['customer_phone', 'customer_name', 'notes'];
 
     /**
-     * List of numeric/comparable fields
+     * Danh sách các field số/có thể so sánh
      */
     protected $numericFields = ['id', 'creator_id', 'customer_id', 'table_id', 'total_amount', 'discount_amount'];
 
     /**
-     * List of date fields
+     * Danh sách các field ngày tháng
      */
     protected $dateFields = ['created_at', 'updated_at'];
 
+    /**
+     * Danh sách các field có thể sắp xếp
+     */
+    protected $sortable = [
+        'id',
+        'customer_name',
+        'customer_phone',
+        'table_id',
+        'total_amount',
+        'discount_amount',
+        'status',
+        'payment_method',
+        'created_at',
+        'updated_at'
+    ];
+
         /**
-     * Setup method to define default behavior
+     * Method setup để định nghĩa hành vi mặc định
      */
     public function setup()
     {
-        // Auto-include customer relationships
+        // Tự động include customer relationships
         $this->includeCustomerRelationships();
     }
 
     /**
-     * Include customer relationships - both by ID and by phone
+     * Include customer relationships - cả theo ID và theo phone
      */
     private function includeCustomerRelationships()
     {
-        // Always include both customer relationships
+        // Luôn include cả hai customer relationships
         return $this->with([
-            'customer',         // For bills with customer_id
-            'customerByPhone'   // For bills with customer_phone (no customer_id)
+            'customer',         // Cho bills có customer_id
+            'customerByPhone'   // Cho bills có customer_phone (không có customer_id)
         ]);
     }
 
-    // Legacy methods for backward compatibility
+    // Các method legacy để tương thích ngược
     public function customerId($value)
     {
         return $this->where('customer_id', $value);

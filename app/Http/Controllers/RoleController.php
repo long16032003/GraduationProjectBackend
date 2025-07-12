@@ -45,7 +45,11 @@ class RoleController extends Controller
 
         $role->save();
 
-        return new JsonResponse($request->all(), JsonResponse::HTTP_OK);
+        return new JsonResponse([
+            'data' => $request->all(),
+            'success' => true,
+            'message' => 'Role created successfully',
+        ], JsonResponse::HTTP_CREATED);
     }
 
     public function update(UpdateRequest $request, Role $role): JsonResponse

@@ -5,6 +5,7 @@ use App\Http\Controllers\CsrfCookieController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\Settings\SiteSettingController;
+use App\Http\Controllers\Settings\SiteInfoController;
 use App\Http\Controllers\User\UserRoleController;
 
 use App\Http\Controllers\Bill\IndexBillController;
@@ -55,6 +56,10 @@ use App\Http\Controllers\PromotionCode\IndexPromotionCodeController;
 use App\Http\Controllers\Statistics\StatisticsController;
 use App\Http\Controllers\Payment\VNPayController;
 use App\Http\Controllers\Payment\SePayController;
+use App\Events\NewOrderEvent;
+use App\Events\TableStatusUpdated;
+use App\Models\Order;
+use App\Models\Table;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -133,6 +138,19 @@ Route::prefix('vnpay')->group(function () {
 Route::get('/site-settings', [SiteSettingController::class, 'index'])->name('site-settings.index');
 Route::get('/site-settings/{key}', [SiteSettingController::class, 'show'])->name('site-settings.show');
 
+// Site Info API routes
+Route::prefix('api/site')->group(function () {
+    Route::get('/name', [SiteInfoController::class, 'getSiteName'])->name('api.site.name');
+    Route::get('/info', [SiteInfoController::class, 'getSiteInfo'])->name('api.site.info');
+    Route::get('/name-helper', [SiteInfoController::class, 'getSiteNameViaHelper'])->name('api.site.name-helper');
+    Route::get('/notification-config', [SiteInfoController::class, 'getNotificationData'])->name('api.site.notification-config');
+});
+
+// Admin only routes for all settings
+Route::middleware(['auth:web'])->prefix('api/site')->group(function () {
+    Route::get('/all-settings', [SiteInfoController::class, 'getAllSettings'])->middleware('permission:site-setting:browse')->name('api.site.all-settings');
+});
+
 // Site Settings routes - Require authentication and permission
 Route::middleware(['auth:web'])->prefix('site-settings')->group(function () {
     Route::post('/', [SiteSettingController::class, 'store'])->middleware('permission:site-setting:create')->name('site-settings.store');
@@ -164,3 +182,49 @@ Route::middleware(['auth:web'])->prefix('staffs')->group(function () {
     });
     Route::post('{user}/check-permission', [UserRoleController::class, 'checkPermission'])->middleware('permission:user:read')->name('users.check-permission');
 });
+
+// Broadcasting test routes - Chỉ sử dụng trong development
+// if (app()->environment('local', 'development')) {
+//     Route::prefix('api/test-broadcast')->group(function () {
+//         Route::post('/', function () {
+//             // Test broadcast với dữ liệu giả
+//             $mockOrder = new \stdClass();
+//             $mockOrder->id = 999;
+//             $mockOrder->table_id = 5;
+//             $mockOrder->total_amount = 250000;
+//             $mockOrder->status = 'pending';
+//             $mockOrder->customer_name = 'Test Customer';
+//             $mockOrder->created_at = now();
+//             $mockOrder->orderDishes = collect([
+//                 (object) [
+//                     'dish' => (object) ['name' => 'Phở Bò'],
+//                     'quantity' => 2,
+//                     'price' => 80000
+//                 ],
+//                 (object) [
+//                     'dish' => (object) ['name' => 'Cơm Gà'],
+//                     'quantity' => 1,
+//                     'price' => 90000
+//                 ]
+//             ]);
+
+//             broadcast(new NewOrderEvent((object) $mockOrder));
+
+//             return response()->json(['message' => 'Test broadcast sent successfully']);
+//         });
+
+//         Route::post('/table-status', function () {
+//             $mockTable = new \stdClass();
+//             $mockTable->id = 5;
+//             $mockTable->number = 'B05';
+//             $mockTable->capacity = 4;
+//             $mockTable->status = 'occupied';
+//             $mockTable->is_available = false;
+//             $mockTable->updated_at = now();
+
+//             broadcast(new TableStatusUpdated((object) $mockTable));
+
+//             return response()->json(['message' => 'Table status test broadcast sent']);
+//         });
+//     });
+// }

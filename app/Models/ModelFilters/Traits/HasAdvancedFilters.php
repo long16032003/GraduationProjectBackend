@@ -5,31 +5,37 @@ namespace App\Models\ModelFilters\Traits;
 trait HasAdvancedFilters
 {
     /**
-     * List of fields that support LIKE queries
-     * Define this in your filter class
+     * Danh sách các field hỗ trợ tìm kiếm LIKE
+     * Định nghĩa trong filter class của bạn
      */
     // protected $likeFields = [];
 
     /**
-     * List of numeric/comparable fields
-     * Define this in your filter class
+     * Danh sách các field số/có thể so sánh
+     * Định nghĩa trong filter class của bạn
      */
     // protected $numericFields = ['id'];
 
     /**
-     * List of date fields
-     * Define this in your filter class
+     * Danh sách các field ngày tháng
+     * Định nghĩa trong filter class của bạn
      */
     // protected $dateFields = ['created_at', 'updated_at'];
 
     /**
-     * List of boolean fields
-     * Define this in your filter class
+     * Danh sách các field boolean
+     * Định nghĩa trong filter class của bạn
      */
     // protected $booleanFields = [];
 
     /**
-     * Support for filters parameter from URL
+     * Danh sách các field có thể sắp xếp
+     * Định nghĩa trong filter class của bạn
+     */
+    // protected $sortable = ['id', 'created_at', 'updated_at'];
+
+    /**
+     * Hỗ trợ parameter filters từ URL
      */
     public function filters($value)
     {
@@ -43,12 +49,12 @@ trait HasAdvancedFilters
             return $this;
         }
 
-        // Handle single filter object
+        // Xử lý filter object đơn
         if (isset($filters['field']) && array_key_exists('value', $filters)) {
             return $this->applyFilter($filters);
         }
 
-        // Handle array of filters
+        // Xử lý mảng các filters
         foreach ($filters as $filter) {
             if (isset($filter['field']) && array_key_exists('value', $filter)) {
                 $this->applyFilter($filter);
@@ -59,7 +65,91 @@ trait HasAdvancedFilters
     }
 
     /**
-     * Apply individual filter based on field and operator
+     * Xử lý sắp xếp với validation
+     */
+    public function sort($field)
+    {
+        $direction = $this->input('order', $this->input('sort_order', 'asc'));
+
+        // Kiểm tra field có được phép sắp xếp không
+        if ($this->isSortableField($field)) {
+            return $this->orderBy($field, $direction);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Xử lý mảng sorters (format từ frontend)
+     */
+    public function sorters($sorters)
+    {
+        if (is_string($sorters)) {
+            $sorters = json_decode($sorters, true);
+        }
+
+        if (!is_array($sorters)) {
+            return $this;
+        }
+
+        foreach ($sorters as $sorter) {
+            if (isset($sorter['field']) && isset($sorter['order'])) {
+                $field = $sorter['field'];
+                $order = strtolower($sorter['order']);
+
+                // Kiểm tra hướng sắp xếp hợp lệ
+                if (!in_array($order, ['asc', 'desc'])) {
+                    $order = 'asc';
+                }
+
+                if ($this->isSortableField($field)) {
+                    $this->orderBy($field, $order);
+                }
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * Xử lý parameter sort_field và sort_order
+     */
+    public function sortField($field)
+    {
+        $direction = $this->input('sort_order', 'asc');
+
+        if ($this->isSortableField($field)) {
+            return $this->orderBy($field, $direction);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Xử lý parameter sort_order
+     */
+    public function sortOrder($order)
+    {
+        // Method này được xử lý bởi sortField, nhưng cần để nhận diện parameter
+        return $this;
+    }
+
+    /**
+     * Kiểm tra field có thể sắp xếp được không
+     */
+    protected function isSortableField($field)
+    {
+        if (!property_exists($this, 'sortable')) {
+            // Nếu không có sortable array, cho phép các field cơ bản
+            $defaultSortable = ['id', 'created_at', 'updated_at'];
+            return in_array($field, $defaultSortable);
+        }
+
+        return in_array($field, $this->sortable);
+    }
+
+    /**
+     * Áp dụng filter dựa trên field và operator
      */
     private function applyFilter($filter)
     {
@@ -67,7 +157,7 @@ trait HasAdvancedFilters
         $value = $filter['value'];
         $operator = $filter['operator'] ?? 'eq';
 
-        // Special handling for different field types
+        // Xử lý đặc biệt cho các loại field khác nhau
         if (property_exists($this, 'booleanFields') && in_array($field, $this->booleanFields)) {
             return $this->applyBooleanFilter($field, $value, $operator);
         }
@@ -84,16 +174,16 @@ trait HasAdvancedFilters
             return $this->applyDateFilter($field, $value, $operator);
         }
 
-        // Default handling for other fields
+        // Xử lý mặc định cho các field khác
         return $this->applyGenericFilter($field, $value, $operator);
     }
 
     /**
-     * Apply filter for boolean fields
+     * Áp dụng filter cho các field boolean
      */
     private function applyBooleanFilter($field, $value, $operator)
     {
-        // Convert to boolean for proper comparison
+        // Chuyển đổi thành boolean để so sánh chính xác
         $boolValue = filter_var($value, FILTER_VALIDATE_BOOLEAN);
 
         return match($operator) {
@@ -106,7 +196,7 @@ trait HasAdvancedFilters
     }
 
     /**
-     * Apply filter for text fields
+     * Áp dụng filter cho các field text
      */
     private function applyTextFilter($field, $value, $operator)
     {
@@ -126,7 +216,7 @@ trait HasAdvancedFilters
     }
 
     /**
-     * Apply filter for numeric fields
+     * Áp dụng filter cho các field số
      */
     private function applyNumericFilter($field, $value, $operator)
     {
@@ -148,11 +238,11 @@ trait HasAdvancedFilters
     }
 
     /**
-     * Apply filter for date fields
+     * Áp dụng filter cho các field ngày tháng
      */
     private function applyDateFilter($field, $value, $operator)
     {
-        // Handle null values explicitly
+        // Xử lý giá trị null một cách rõ ràng
         if ($value === null) {
             return match($operator) {
                 'eq' => $this->whereNull($field),
@@ -185,7 +275,7 @@ trait HasAdvancedFilters
     }
 
     /**
-     * Apply generic filter for other fields
+     * Áp dụng filter chung cho các field khác
      */
     private function applyGenericFilter($field, $value, $operator)
     {
@@ -209,7 +299,7 @@ trait HasAdvancedFilters
     }
 
     /**
-     * Apply between filter for numeric fields
+     * Áp dụng filter between cho các field số
      */
     private function applyBetweenFilter($field, $value)
     {
@@ -220,7 +310,7 @@ trait HasAdvancedFilters
     }
 
     /**
-     * Apply not between filter for numeric fields
+     * Áp dụng filter not between cho các field số
      */
     private function applyNotBetweenFilter($field, $value)
     {
@@ -231,7 +321,7 @@ trait HasAdvancedFilters
     }
 
     /**
-     * Apply between filter for date fields
+     * Áp dụng filter between cho các field ngày tháng
      */
     private function applyDateBetweenFilter($field, $value)
     {
@@ -242,7 +332,7 @@ trait HasAdvancedFilters
     }
 
     /**
-     * Apply not between filter for date fields
+     * Áp dụng filter not between cho các field ngày tháng
      */
     private function applyDateNotBetweenFilter($field, $value)
     {
@@ -253,16 +343,7 @@ trait HasAdvancedFilters
     }
 
     /**
-     * Generic sort method
-     */
-    public function sort($value)
-    {
-        $direction = $this->input('order', 'asc');
-        return $this->orderBy($value, $direction);
-    }
-
-    /**
-     * Generic search method - override this in your filter class
+     * Method tìm kiếm chung - override trong filter class của bạn
      */
     public function search($value)
     {

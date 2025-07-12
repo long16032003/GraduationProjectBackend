@@ -21,3 +21,30 @@ if (! function_exists('get_limiter_key')) {
         ]);
     }
 }
+
+if (! function_exists('site_setting')) {
+    /**
+     * Lấy giá trị setting từ database
+     *
+     * @param string $key
+     * @param mixed $default
+     * @return mixed
+     */
+    function site_setting(string $key, $default = null)
+    {
+        return \App\Models\SiteSetting::get($key, $default);
+    }
+    // VD: site_setting('site_name')
+}
+
+if (! function_exists('site_name')) {
+    /**
+     * Lấy tên site từ database
+     *
+     * @return string
+     */
+    function site_name(): string
+    {
+        return site_setting('site_name', 'Restaurant Name');
+    }
+}

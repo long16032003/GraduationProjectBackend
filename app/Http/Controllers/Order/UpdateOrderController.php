@@ -129,7 +129,13 @@ class UpdateOrderController extends Controller
                         }
                     }
                 }
+
+                // Kiểm tra xem tất cả order_dishes đã sẵn sàng chưa để tự động cập nhật order status
+                $this->checkAndUpdateOrderStatusToDone($order);
             }
+
+            // Kiểm tra và tự động cập nhật order status thành 'done' nếu tất cả order_dishes đã sẵn sàng
+            $this->checkAndUpdateOrderStatusToDone($order);
 
             DB::commit();
 
@@ -155,6 +161,39 @@ class UpdateOrderController extends Controller
                 'message' => 'Có lỗi xảy ra khi cập nhật đơn hàng',
                 'error' => $e->getMessage()
             ], 500);
+        }
+    }
+
+    /**
+     * Kiểm tra và cập nhật trạng thái của đơn hàng thành 'done' nếu tất cả order_dishes (trừ những đã hủy) đều sẵn sàng.
+     */
+    private function checkAndUpdateOrderStatusToDone(Order $order)
+    {
+        // Chỉ kiểm tra nếu order chưa được hoàn thành hoặc hủy
+        if (in_array($order->status, ['done', 'cancelled'])) {
+            return;
+        }
+
+        $allOrderDishes = $order->order_dishes()->get();
+
+        // Lọc ra những order_dishes chưa bị hủy (không có cancelled_reason và cancelled_at)
+        $activeOrderDishes = $allOrderDishes->filter(function ($orderDish) {
+            return is_null($orderDish->cancelled_reason) && is_null($orderDish->cancelled_at);
+        });
+
+        // Nếu không có order_dish nào còn active, không cần kiểm tra
+        if ($activeOrderDishes->isEmpty()) {
+            return;
+        }
+
+        // Kiểm tra xem tất cả order_dishes active đều có is_available = true không
+        $allActiveAvailable = $activeOrderDishes->every(function ($orderDish) {
+            return $orderDish->is_available == true;
+        });
+
+        // Nếu tất cả order_dishes active đều sẵn sàng, cập nhật order status thành 'done'
+        if ($allActiveAvailable) {
+            $order->update(['status' => 'done', 'priority' => 0]);
         }
     }
 }
