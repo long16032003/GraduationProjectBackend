@@ -29,8 +29,8 @@ class MomoController extends Controller
 
             // Required fields
             $orderInfo = $request->input('orderInfo', 'Thanh toán đơn hàng');
-            $redirectUrl = $request->input('redirectUrl', config('app.url') . '/momo/return');
-            $ipnUrl = $request->input('ipnUrl', config('app.url') . '/momo/notify');
+            $redirectUrl = $request->input('redirectUrl', env('MOMO_RETURN_URL'));
+            $ipnUrl = $request->input('ipnUrl', env('MOMO_NOTIFY_URL'));
             $amount = $request->input('amount');
             $billId = $request->input('bill_id') ?? $request->input('orderId');
             $discountAmount = $request->input('discount_amount', 0);
@@ -172,15 +172,11 @@ class MomoController extends Controller
                 ]);
                 return response()->json(['message' => 'Invalid signature'], 400);
             }
-
-            // Process the payment result
+            // Thanh toán thành công
             if ($resultCode == 0) {
-                // Payment successful
-                $this->updatePaymentStatus($orderId, 'completed', $transId);
+                $this->updateBillStatus($orderId, $transId, $amount);
                 Log::info('MoMo payment successful', ['orderId' => $orderId, 'transId' => $transId]);
             } else {
-                // Payment failed
-                $this->updatePaymentStatus($orderId, 'failed', $transId);
                 Log::warning('MoMo payment failed', ['orderId' => $orderId, 'resultCode' => $resultCode, 'message' => $message]);
             }
 
@@ -216,7 +212,7 @@ class MomoController extends Controller
             if ($resultCode == 0) {
                 if ($billId) {
                     $bill = Bill::where('id', $billId)->first();
-                    if ($bill) {
+                    if ($bill->isUnpaid()) {
                         $bill->status = 'paid';
                         $bill->payment_method = 'momo';
                         $bill->total_amount = (int)$request->input('amount');
@@ -224,7 +220,7 @@ class MomoController extends Controller
                         $bill->save();
                     }
                 }
-                return redirect('https://localhost:5173/admin/bills');
+                // return redirect('https://localhost:5173/admin/bills');
                 // return response()->json([
                 //     'success' => true,
                 //     'message' => 'Thanh toán thành công',
@@ -407,14 +403,16 @@ class MomoController extends Controller
         return $result;
     }
 
-    private function updatePaymentStatus($orderId, $status, $transId = null)
+    private function updateBillStatus($orderId, $transId = null, $amount)
     {
         try {
+            $discountAmount = 0;
             // Trích xuất bill_id từ orderId (format: billId_timestamp_random)
             $billId = null;
             if ($orderId && strpos($orderId, '_') !== false) {
                 $parts = explode('_', $orderId);
                 $billId = $parts[0]; // Lấy phần đầu là bill_id
+                $discountAmount = $parts[1]; // Lấy phần thứ hai là discount_amount
             } else {
                 $billId = $orderId; // Fallback nếu không có format mong đợi
             }
@@ -424,40 +422,21 @@ class MomoController extends Controller
                 return;
             }
 
-            DB::transaction(function () use ($billId, $orderId, $status, $transId) {
+            DB::transaction(function () use ($billId, $discountAmount, $amount) {
                 // Update bill status
                 $bill = Bill::where('id', $billId)->first();
-                if ($bill) {
-                    $bill->status = $status === 'completed' ? 'paid' : 'unpaid';
-                    $bill->save();
+                if (!$bill || $bill->isPaid()) {
+                    return;
                 }
-
-                // Create or update payment record (adapting to VNPay table structure)
-                Payment::updateOrCreate(
-                    ['bill_id' => $billId, 'vnp_TxnRef' => $orderId],
-                    [
-                        'vnp_TransactionNo' => $transId,
-                        'vnp_Amount' => $bill->total_amount ?? 0,
-                        'vnp_OrderInfo' => 'MoMo Payment for Bill #' . $billId,
-                        'vnp_ResponseCode' => $status === 'completed' ? '00' : '99',
-                        'vnp_TransactionStatus' => $status === 'completed' ? '00' : '02',
-                        'vnp_PayDate' => $status === 'completed' ? date('YmdHis') : null,
-                        'vnp_BankCode' => 'MOMO',
-                        'status' => $status === 'completed' ? 'success' : 'failed',
-                        'vnpay_response' => json_encode([
-                            'provider' => 'momo',
-                            'orderId' => $orderId,
-                            'transId' => $transId,
-                            'status' => $status,
-                            'billId' => $billId
-                        ])
-                    ]
-                );
+                $bill->status = 'paid';
+                $bill->payment_method = 'momo';
+                $bill->total_amount = (int)$amount;
+                $bill->discount_amount = (int)$discountAmount;
+                $bill->save();
             });
         } catch (\Exception $e) {
             Log::error('Failed to update payment status', [
                 'orderId' => $orderId,
-                'status' => $status,
                 'error' => $e->getMessage()
             ]);
         }

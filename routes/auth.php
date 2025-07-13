@@ -129,6 +129,7 @@ Route::middleware('auth:web')->group(function () {
         Route::put('/{id}', [UpdateBillController::class, 'update'])->name('bills.update');
         Route::post('/{id}/pay', [UpdateBillController::class, 'pay'])->middleware('permission:bill:update')->name('bills.pay');
         Route::delete('/{id}', [DeleteBillController::class, 'delete'])->name('bills.delete');
+        Route::get('/{id}/check-paid', [ShowBillController::class, 'checkPaid'])->name('bills.check-paid');
     });
 
     // Dish Categories - WITH PERMISSIONS

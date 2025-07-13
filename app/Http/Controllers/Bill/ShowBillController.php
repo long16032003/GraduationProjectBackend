@@ -35,4 +35,31 @@ class ShowBillController extends Controller
             ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
+
+    public function checkPaid(Request $request, $id): JsonResponse
+    {
+        try {
+            $bill = Bill::findOrFail($id);
+
+            if ($bill->isPaid()) {
+                return new JsonResponse([
+                    'success' => true,
+                    'message' => 'Hóa đơn đã được thanh toán',
+                    'data' => $bill
+                ], 200);
+            } else {
+                return new JsonResponse([
+                    'success' => false,
+                    'message' => 'Hóa đơn chưa được thanh toán',
+                    'data' => $bill
+                ], 200);
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Cập nhật hóa đơn thất bại',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 }
