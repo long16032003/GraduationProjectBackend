@@ -220,7 +220,7 @@ class MomoController extends Controller
                         $bill->save();
                     }
                 }
-                // return redirect('https://localhost:5173/admin/bills');
+                return redirect(env('FRONTEND_URL') . '/admin/bills');
                 // return response()->json([
                 //     'success' => true,
                 //     'message' => 'Thanh toán thành công',
