@@ -72,15 +72,24 @@ class UpdateStaffController extends Controller
         }
     }
 
-    public function changePassword(Request $request, $id): JsonResponse
+    public function changePassword(Request $request, $uuid): JsonResponse
     {
         try {
             $auth = Auth::user();
-            $staff = User::findOrFail($id);
+            $staff = User::where('uuid', $uuid)->firstOrFail();
 
-            // Validation cho các field có thể được cập nhật
+            // Chỉ cho phép staff đổi mật khẩu của chính mình hoặc admin có quyền
+            // if ($auth->id !== $staff->id && !$auth->hasPermission('user:update')) {
+            //     return response()->json([
+            //         'success' => false,
+            //         'message' => 'Bạn không có quyền thực hiện thao tác này',
+            //     ], 403);
+            // }
+
+            // Validation cho các field
             $validator = Validator::make($request->all(), [
-                'password' => 'sometimes|required|string|min:8',
+                'current_password' => 'required|string',
+                'new_password' => 'required|string|min:8|confirmed',
             ]);
 
             if ($validator->fails()) {
@@ -91,14 +100,24 @@ class UpdateStaffController extends Controller
                 ], 422);
             }
 
+            // Xác thực mật khẩu hiện tại
+            if (!Hash::check($request->current_password, $staff->password)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Mật khẩu hiện tại không chính xác',
+                    'errors' => ['current_password' => ['Mật khẩu hiện tại không chính xác']]
+                ], 422);
+            }
+
+            // Cập nhật mật khẩu mới
             $staff->update([
-                'password' => Hash::make($request->password),
+                'password' => Hash::make($request->new_password),
             ]);
 
             return new JsonResponse([
                 'success' => true,
                 'message' => 'Đổi mật khẩu thành công',
-                'data' => $staff->fresh() // Lấy dữ liệu mới từ database
+                'data' => $staff->fresh()->makeHidden(['password'])
             ], 200);
 
         } catch (\Exception $e) {

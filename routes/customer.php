@@ -32,6 +32,6 @@ Route::middleware('auth:customer')->group(function () {
 
     Route::get('/customers/{id}', [CustomerController::class, 'show'])->name('customers.show');
     Route::put('/customers/{id}', [CustomerController::class, 'update'])->name('customers.update');
-
+    Route::put('/customers/change-password/{uuid}', [CustomerController::class, 'changePassword'])->name('customers.change-password');
 });
 

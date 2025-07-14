@@ -146,6 +146,7 @@ Route::middleware('auth:web')->group(function () {
     Route::post('staffs', [StoreStaffController::class, 'store'])->middleware('permission:user:create')->name('staff.store');
     Route::get('/staffs', [IndexStaffController::class, 'index'])->middleware('permission:user:browse')->name('staff.index');
     Route::put('/staffs/{id}', [UpdateStaffController::class, 'update'])->middleware('permission:user:update')->name('staff.update');
+    Route::put('/staffs/change-password/{uuid}', [UpdateStaffController::class, 'changePassword'])->name('staff.change-password');
     Route::delete('/staffs/{id}', [DeleteStaffController::class, 'delete'])->middleware('permission:user:delete')->name('staff.delete');
 
     // Staff Role Assignment - WITH PERMISSIONS
