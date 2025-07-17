@@ -21,9 +21,8 @@ return new class extends Migration
             $table->integer('number_of_guests');
             $table->enum('status', ['pending', 'confirmed', 'cancelled']);
             $table->text('notes')->nullable();
-            $table->bigInteger('creator_id');
+            $table->bigInteger('creator_id')->nullable();
             $table->string('creator_type')->default('user');
-            $table->index(['creator_id', 'creator_type']);
             $table->timestamps();
         });
     }

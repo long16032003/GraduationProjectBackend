@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Payment;
 
 use App\Http\Controllers\Controller;
 use App\Models\Bill;
+use App\Models\Customer;
 use App\Models\Payment;
 use App\Services\VNPayService;
 use Illuminate\Http\JsonResponse;
@@ -53,10 +54,19 @@ class VNPayController extends Controller
             }
 
             $bill = Bill::findOrFail($request->bill_id);
-            $bill->update([
+            $result = $bill->update([
                 'total_amount' => $request->amount,
                 'payment_method' => 'cash'
             ]);
+
+            if($result && $bill->customer_phone) {
+                $customer = Customer::where('phone', $bill->customer_phone)->first();
+                if($customer && $bill->total_amount > 10000) {
+                    $customer->update([
+                        'point' => $customer->point + round((int)$bill->total_amount / 10000),
+                    ]);
+                }
+            }
 
             // Check if bill already paid
             if ($bill->status === Bill::STATUS_PAID) {

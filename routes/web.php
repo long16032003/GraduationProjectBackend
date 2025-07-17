@@ -107,9 +107,11 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/statistics/revenue', [StatisticsController::class, 'getRevenue'])->middleware('permission:statistics:browse')->name('statistics.revenue');
 });
 
-Route::middleware(['auth:web,customer'])->group(function () {
-    Route::get('/tables', [IndexTableController::class, 'index'])->name('tables.index');
+Route::get('/tables', [IndexTableController::class, 'index'])->name('tables.index');
 
+Route::post('reservations', [StoreReservationController::class, 'store'])->name('reservations.store');
+
+Route::middleware(['auth:web,customer'])->group(function () {
     Route::get('/available-tables', [AvailableTablesController::class, 'getAvailableTables']);
     Route::get('/check-availability', [AvailableTablesController::class, 'checkTableAvailability']);
 
@@ -120,7 +122,6 @@ Route::middleware(['auth:web,customer'])->group(function () {
 
     Route::prefix('reservations')->group(function () {
         Route::get('/', [IndexReservationController::class, 'index'])->name('reservations.index');
-        Route::post('/', [StoreReservationController::class, 'store'])->name('reservations.store');
         Route::put('{id}', [UpdateReservationController::class, 'update'])->middleware('permission:reservation:update')->name('reservations.update');
         Route::delete('{id}', [DeleteReservationController::class, 'delete'])->middleware('permission:reservation:delete')->name('reservations.delete');
     });

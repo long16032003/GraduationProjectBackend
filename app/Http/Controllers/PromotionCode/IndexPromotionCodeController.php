@@ -13,7 +13,6 @@ class IndexPromotionCodeController extends Controller
     public function index(Request $request): JsonResponse
     {
         $auth = Auth::user();
-
         // Sử dụng EloquentFilter - đã có các method trong PromotionCodeFilter
         $promotionCodes = PromotionCode::filter($request->all())
             ->with(['promotion', 'customer'])

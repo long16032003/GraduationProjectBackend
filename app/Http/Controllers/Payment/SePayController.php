@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Payment;
 
 use App\Http\Controllers\Controller;
 use App\Models\Bill;
+use App\Models\Customer;
 use App\Models\Payment;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -71,11 +72,19 @@ class SePayController extends Controller
 
             DB::transaction(function () use ($bill, $request) {
                 // Update bill status to paid
-                $bill->update([
+                $result = $bill->update([
                     'status' => Bill::STATUS_PAID,
                     'payment_method' => Bill::PAYMENT_METHOD_BANK_TRANSFER,
                     'total_amount' => $request->input('transferAmount', 0),
                 ]);
+                if($result && $bill->customer_phone) {
+                    $customer = Customer::where('phone', $bill->customer_phone)->first();
+                    if($customer && $bill->total_amount > 10000) {
+                        $customer->update([
+                            'point' => $customer->point + round((int)$bill->total_amount / 10000),
+                        ]);
+                    }
+                }
 
             });
 

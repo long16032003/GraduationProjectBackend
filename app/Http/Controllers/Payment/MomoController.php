@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Payment;
 
 use App\Http\Controllers\Controller;
 use App\Models\Bill;
+use App\Models\Customer;
 use App\Models\Payment;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -213,11 +214,21 @@ class MomoController extends Controller
                 if ($billId) {
                     $bill = Bill::where('id', $billId)->first();
                     if ($bill->isUnpaid()) {
-                        $bill->status = 'paid';
-                        $bill->payment_method = 'momo';
-                        $bill->total_amount = (int)$request->input('amount');
-                        $bill->discount_amount = (int)$discountAmount;
-                        $bill->save();
+                        $result = $bill->update([
+                            'status' => 'paid',
+                            'payment_method' => 'momo',
+                            'total_amount' => (int)$request->input('amount'),
+                            'discount_amount' => (int)$discountAmount,
+                        ]);
+                        // tích điểm
+                        if($result && $bill->customer_phone) {
+                            $customer = Customer::where('phone', $bill->customer_phone)->first();
+                            if($customer && $bill->total_amount > 10000) {
+                                $customer->update([
+                                    'point' => $customer->point + round((int)$bill->total_amount / 10000),
+                                ]);
+                            }
+                        }
                     }
                 }
                 return redirect(env('FRONTEND_URL') . '/admin/bills');

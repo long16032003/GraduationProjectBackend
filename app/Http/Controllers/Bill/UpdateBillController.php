@@ -51,9 +51,9 @@ class UpdateBillController extends Controller
 
             if($result && $bill->customer_phone) {
                 $customer = Customer::where('phone', $bill->customer_phone)->first();
-                if($customer) {
+                if($customer && $bill->total_amount > 10000) {
                     $customer->update([
-                        'point' => $customer->point + round((int)$request->total_amount / 10000),
+                        'point' => $customer->point + round((int)$bill->total_amount / 10000),
                     ]);
                 }
             }

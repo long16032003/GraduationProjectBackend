@@ -38,25 +38,30 @@ class StoreReservationController extends Controller
             $data['status'] = 'pending';
 
             $user = $request->user();
+            if($user){
+                if ($user instanceof User) {
+                    $data['creator_id'] = $user->id;
+                    $data['creator_type'] = 'staff';
+                }
 
-            if ($user instanceof User) {
-                $data['creator_id'] = $user->id;
-                $data['creator_type'] = 'staff';
+    //             If authenticated as customer, set customer_id as creator
+                if ($user instanceof Customer) {
+                    $data['customer_id'] = $user->id;
+                    $data['creator_id'] = $user->id;
+                    $data['creator_type'] = 'customer';
+                }
+            }else{
+                $data['creator_type'] = 'guest';
             }
 
-//             If authenticated as customer, set customer_id as creator
-            if ($user instanceof Customer) {
-                $data['customer_id'] = $user->id;
-                $data['creator_id'] = $user->id;
-                $data['creator_type'] = 'customer';
-            }
 
             $reservation = Reservation::create($data);
 
             // Load relationships để có đầy đủ thông tin cho email
             $reservation->load(['table', 'customer']);
+            dump($reservation);
 
-            if ($user instanceof Customer && $reservation) {
+            if ($user && $user instanceof Customer && $reservation) {
                 // Gửi email xác nhận đặt bàn
                 $this->sendReservationConfirmationEmail($reservation);
             }
