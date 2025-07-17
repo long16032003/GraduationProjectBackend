@@ -37,7 +37,7 @@ class StoreReservationController extends Controller
             $data['reservation_date'] = Carbon::createFromTimestamp($timestamp, 'Asia/Ho_Chi_Minh')->format('Y-m-d H:i:s');
             $data['status'] = 'pending';
 
-            $user = $request->user();
+            $user = Auth::guard('customer')->user();
             if($user){
                 if ($user instanceof User) {
                     $data['creator_id'] = $user->id;
@@ -53,7 +53,6 @@ class StoreReservationController extends Controller
             }else{
                 $data['creator_type'] = 'guest';
             }
-
 
             $reservation = Reservation::create($data);
 
