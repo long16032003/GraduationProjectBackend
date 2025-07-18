@@ -58,7 +58,6 @@ class StoreReservationController extends Controller
 
             // Load relationships để có đầy đủ thông tin cho email
             $reservation->load(['table', 'customer']);
-            dump($reservation);
 
             if ($user && $user instanceof Customer && $reservation) {
                 // Gửi email xác nhận đặt bàn

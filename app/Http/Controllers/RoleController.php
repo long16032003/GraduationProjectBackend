@@ -52,18 +52,11 @@ class RoleController extends Controller
         ], JsonResponse::HTTP_CREATED);
     }
 
-    public function update(UpdateRequest $request, Role $role): JsonResponse
+    public function update(UpdateRequest $request, $id): JsonResponse
     {
-        $wheres = [
-            ['name', '=', $request->name],
-            ['id', '<>', $role->id],
-        ];
-        if (Role::where($wheres)->exists()) {
-            throw ValidationException::withMessages([
-                'name' => trans('validation.unique', [
-                    'attribute' => trans('name')
-                ]),
-            ]);
+        $role = Role::find($id);
+        if (!$role) {
+            return response()->json(['message' => 'Không tìm thấy quyền này'], JsonResponse::HTTP_NOT_FOUND);
         }
         $role->name = $request->name;
         $role->level = $request->integer('level');
@@ -79,7 +72,11 @@ class RoleController extends Controller
 
         $role->save();
 
-        return new JsonResponse($request->all(), JsonResponse::HTTP_OK);
+        return new JsonResponse([
+            'success' => true,
+            'message' => 'Cập nhật thành công',
+            'data' => $role,
+        ], JsonResponse::HTTP_OK);
     }
 
     public function show(ReadRequest $request, Role $role): JsonResponse
@@ -87,10 +84,16 @@ class RoleController extends Controller
         return response()->json($role);
     }
 
-    public function destroy(DeleteRequest $request, Role $role): JsonResponse
+    public function destroy(DeleteRequest $request, $id): JsonResponse
     {
+        $role = Role::find($id);
+        if (!$role) {
+            return response()->json(['message' => 'Không tìm thấy quyền này'], JsonResponse::HTTP_NOT_FOUND);
+        }
         $role->delete();
-
-        return response()->json(null, JsonResponse::HTTP_NO_CONTENT);
+        return new JsonResponse([
+            'success' => true,
+            'message' => 'Xóa thành công',
+        ], JsonResponse::HTTP_OK);
     }
 }
